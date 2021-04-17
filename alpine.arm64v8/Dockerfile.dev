@@ -1,0 +1,13 @@
+FROM docker.io/curlimages/curl:7.75.0
+
+RUN apk update && apk add ca-certificates iptables && rm -rf /var/cache/apk/*
+
+COPY kubelet kubeadm /usr/bin/
+ADD cni-plugins-linux-arm64-v0.9.1.tgz /opt/cni/bin/
+
+WORKDIR /root
+
+ENV HOSTNAME=""
+ENV NODE_IP=""
+
+ENTRYPOINT kubelet --network-plugin=cni --hostname-override=${HOSTNAME} --node-ip=${NODE_IP} --config=/var/lib/kubelet/config.yaml

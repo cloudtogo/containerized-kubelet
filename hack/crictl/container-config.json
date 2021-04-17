@@ -1,0 +1,123 @@
+{
+  "metadata": {
+    "name": "kubelet"
+  },
+  "labels": {
+    "io.kubernetes.pod.name": "kubeletd",
+    "io.kubernetes.pod.namespace": "default",
+    "io.kubernetes.pod.uid": "kubeletd",
+    "io.kubernetes.container.name": "kubelet"
+  },
+  "annotations": {
+    "io.kubernetes.container.hash": "",
+    "io.kubernetes.container.restartCount": "0",
+    "io.kubernetes.container.terminationMessagePath": "/dev/termination-log",
+    "io.kubernetes.container.terminationMessagePolicy": "File",
+    "io.kubernetes.pod.terminationGracePeriod": "30"
+  },
+  "image":{
+    "image": "docker.io/kitt0hsu/kubelet:v1.20.5"
+  },
+  "command": [
+    "kubelet"
+  ],
+  "args": [
+    "--register-node", "--network-plugin=cni", "--hostname-override=minikube-m02", "--node-ip=192.168.64.29",
+    "--config=/var/lib/kubelet/config.yaml", "--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf",
+    "--kubeconfig=/etc/kubernetes/kubelet.conf", "--container-runtime=remote",
+    "--container-runtime-endpoint=unix:///run/containerd/containerd.sock",
+    "--image-service-endpoint=unix:///run/containerd/containerd.sock",
+    "--runtime-request-timeout=15m", "--v=5"
+  ],
+  "envs": [
+    {
+      "key": "HOSTNAME",
+      "value": "minikube-m02"
+    },
+    {
+      "key": "NODE_IP",
+      "value": "192.168.64.29"
+    }
+  ],
+  "mounts": [
+    {
+      "container_path": "/etc/systemd",
+      "host_path": "/etc/systemd",
+      "propagation": 0
+    },
+    {
+      "container_path": "/lib/systemd",
+      "host_path": "/lib/systemd",
+      "propagation": 0
+    },
+    {
+      "container_path": "/etc/machine-id",
+      "host_path": "/etc/machine-id",
+      "readonly": true,
+      "propagation": 0
+    },
+    {
+      "container_path": "/var/lib/dbus/machine-id",
+      "host_path": "/var/lib/dbus/machine-id",
+      "readonly": true,
+      "propagation": 0
+    },
+    {
+      "container_path": "/mnt/vda1/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs",
+      "host_path": "/mnt/vda1/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs",
+      "propagation": 2
+    },
+    {
+      "container_path": "/var/lib/minikube/certs/ca.crt",
+      "host_path": "/var/lib/minikube/certs/ca.crt",
+      "readonly": true,
+      "propagation": 0
+    },
+    {
+      "container_path": "/run/systemd/resolve/resolv.conf",
+      "host_path": "/run/systemd/resolve/resolv.conf",
+      "readonly": true,
+      "propagation": 0
+    },
+    {
+      "container_path": "/run/containerd/containerd.sock",
+      "host_path": "/run/containerd/containerd.sock",
+      "propagation": 0
+    },
+    {
+      "container_path": "/var/lib/kubelet",
+      "host_path": "/var/lib/kubelet",
+      "propagation": 2
+    },
+    {
+      "container_path": "/var/log/pods",
+      "host_path": "/var/log/pods",
+      "propagation": 2
+    },
+    {
+      "container_path": "/etc/kubernetes",
+      "host_path": "/etc/kubernetes",
+      "propagation": 0
+    },
+    {
+      "container_path": "/etc/cni/net.d",
+      "host_path": "/etc/cni/net.d",
+      "propagation": 0
+    },
+    {
+      "container_path": "/sys/fs/cgroup",
+      "host_path": "/sys/fs/cgroup",
+      "propagation": 2
+    }
+  ],
+  "log_path":"kubelet.log",
+  "linux": {
+    "security_context": {
+      "namespace_options": {
+        "network": 2,
+        "pid": 2
+      },
+      "privileged": true
+    }
+  }
+}
