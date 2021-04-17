@@ -2,7 +2,7 @@
 	@echo "Building source code image for kubernetes v$@"
 	kubectl dev build -t docker.io/cloudtogo/curl-downloader:alpine-3 -f downloader.dockerfile no-arch
 	kubectl dev build --build-arg K8S_VERSIOIN=$@ -t docker.io/cloudtogo/kubernetes-source:v$@ -f kubernetes-src.dockerfile no-arch
-	kubectl dev build --build-arg K8S_VERSIOIN=$@ -t docker.io/cloudtogo/kubelet:v$@-amd64 alpine.amd64
+	kubectl dev build --build-arg K8S_VERSIOIN=$@ -t docker.io/cloudtogo/kubelet:v$@-amd64 alpine.arm64v8
 
 .PHONY: lts
-lts: v1.21.0
+lts: v1.21.0 v1.20.6 v1.19.10 v1.18.18
