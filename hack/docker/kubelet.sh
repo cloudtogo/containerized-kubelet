@@ -17,8 +17,6 @@ docker run -d --restart=always --name=kubeletd --network=host --pid=host --privi
 	--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf \
 	--register-node --network-plugin=cni --config=/var/lib/kubelet/config.yaml --v=5
 
-
-
 docker run -d --restart=always --name=kubeletd --network=host --pid=host --privileged \
 	--env HOSTNAME=Hytera \
 	--env NODE_IP=10.10.10.200 \
