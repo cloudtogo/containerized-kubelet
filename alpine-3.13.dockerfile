@@ -28,9 +28,9 @@ RUN make WHAT=cmd/kubeadm
 
 FROM alpine:3.13
 RUN apk update && apk add util-linux coreutils findutils ca-certificates conntrack-tools iptables && rm -rf /var/cache/apk/*
-
+ARG CRI_TOOLS_BIN_PATH="build/bin"
 COPY --from=k8s /go/src/k8s.io/kubernetes/_output/bin/kube* /usr/bin/
-COPY --from=crictl /go/src/github.com/kubernetes-sigs/cri-tools/_output/crictl /usr/bin/
+COPY --from=crictl /go/src/github.com/kubernetes-sigs/cri-tools/${CRI_TOOLS_BIN_PATH}/crictl /usr/bin/
 COPY --from=cni-plugins /go/src/github.com/containernetworking/plugins/bin /opt/cni/bin/
 
 WORKDIR /
