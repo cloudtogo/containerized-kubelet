@@ -1,5 +1,12 @@
 PLATFORM := linux/amd64,linux/arm64,linux/arm/v7
 
+.PHONY: kube-proxy
+kube-proxy:
+	./build/kube-proxy.sh $(PLATFORM) 1.21.0
+	./build/kube-proxy.sh $(PLATFORM) 1.20.6
+	./build/kube-proxy.sh $(PLATFORM) 1.19.10
+	./build/kube-proxy.sh $(PLATFORM) 1.18.18
+
 %:
 	$(eval K8S_VERSIOIN = $@)
 	$(eval K8S_VERSIOIN_PREFIX = $(subst $() $(),., $(wordlist 1, 2, $(subst ., ,$(K8S_VERSIOIN)))))

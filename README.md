@@ -8,6 +8,9 @@ It also tries to optimize on image size to work on devices that have limited sto
 All images are based on alpine:3.13 with CGO enabled. 
 They are available on [cloudtogo4edge/kubelet](https://hub.docker.com/r/cloudtogo4edge/kubelet).
 
+We also provide a multi-arch kube-proxy image based on alpine3.13. Its size is less than half of the size of the official one.
+It is available on [cloudtogo4edge/kube-proxy](https://hub.docker.com/r/cloudtogo4edge/kube-proxy).
+
 ## Tags
 
 ### Tag style
@@ -29,8 +32,6 @@ They are available on [cloudtogo4edge/kubelet](https://hub.docker.com/r/cloudtog
 
 ### v1.20.6
 
-Compressed/Extracted Size Matrix
-
 | Tag | amd64 | arm64 | arm32v7 |
 | --- | --- | --- | --- |
 |[`v1.20.6`](https://hub.docker.com/layers/cloudtogo4edge/kubelet/v1.20.6/images/sha256-ea9aaa325037cde19b1ba76bdcba25e5fca6825d9a590a51a527f16dd72fff05?context=explore)| `50 MB / 175 MB`|`47 MB / 163 MB`|`46 MB / 142 MB`|
@@ -39,8 +40,6 @@ Compressed/Extracted Size Matrix
 |[`v1.20.6-kubeadm-cni`](https://hub.docker.com/layers/cloudtogo4edge/kubelet/v1.20.6-kubeadm-cni/images/sha256-23922e7cd76f8b30cb90853ac6395fc80f13e55a71711874f0adec35955af191?context=explore)| `98 MB / 285 MB`|`90 MB / 268 MB`|`90 MB / 238 MB`|
 
 ### v1.19.10
-
-Compressed/Extracted Size Matrix
 
 | Tag | amd64 | arm64 | arm32v7 |
 | --- | --- | --- | --- |
@@ -51,14 +50,19 @@ Compressed/Extracted Size Matrix
 
 ### v1.18.18
 
-Compressed/Extracted Size Matrix
-
 | Tag | amd64 | arm64 | arm32v7 |
 | --- | --- | --- | --- |
 |[`v1.18.18`](https://hub.docker.com/layers/cloudtogo4edge/kubelet/v1.18.18/images/sha256-7cbdca791c6d9c2e0e5e95197754fa904174de7f3fc7dcec5445f5370c6ff967?context=explore)| `42 MB / 148 MB`|`39 MB / 137 MB`|`38 MB / 119 MB`|
 |[`v1.18.18-cni`](https://hub.docker.com/layers/cloudtogo4edge/kubelet/v1.18.18-cni/images/sha256-dd69f5b4e6da9aa380dc0f2efbe11b4dd6773ab76fc7a1aebe61d283a1c2b3b3?context=explore)| `78 MB / 218 MB`|`73 MB / 205 MB`|`73 MB / 182 MB`|
 |[`v1.18.18-kubeadm`](https://hub.docker.com/layers/cloudtogo4edge/kubelet/v1.18.18-kubeadm/images/sha256-3694400e7f1cd6dd55a9270b5a73e6f6d6478665e2a6ca61b40e692dcc59d4ad?context=explore)| `52 MB / 185 MB`|`48 MB / 172 MB`|`48 MB / 150 MB`|
 |[`v1.18.18-kubeadm-cni`](https://hub.docker.com/layers/cloudtogo4edge/kubelet/v1.18.18-kubeadm-cni/images/sha256-d5e61b8685fd65c1c33350c565643a1fead0615deb4efd1ae0550c4035c71bd2?context=explore)| `89 MB / 255 MB`|`82 MB / 239 MB`|`82 MB / 213 MB`|
+
+### Alpine 3.13 based kube-proxy image
+
+* [`v1.21.0`](https://hub.docker.com/layers/cloudtogo4edge/kube-proxy/v1.21.0/images/sha256-358cee430c3d6716d0e6998367e504601c110a05f0fdb4214cad86b0503f2fd5?context=repo)
+* [`v1.20.6`](https://hub.docker.com/layers/cloudtogo4edge/kube-proxy/v1.20.6/images/sha256-34e7ff7a9731feb2b2650a543f21a94079f572836d5b6536cb7003bcc5d1532b?context=repo)
+* [`v1.19.10`](https://hub.docker.com/layers/cloudtogo4edge/kube-proxy/v1.19.10/images/sha256-c814d18df1e2c49affe68b1304d0749073901053e2eb19c257e58e2acd956262?context=repo)
+* [`v1.18.18`](https://hub.docker.com/layers/cloudtogo4edge/kube-proxy/v1.18.18/images/sha256-e09a0c471568f3e622d0200b6f790fa5c50cf76897a5e0715ac11cac6b36be70?context=repo)
 
 ## About hostpath and local storage
 If the `kubelet` image is desired to work in container-based Linux Distro, such as CoreOS or Flatcar Container Linux, 
