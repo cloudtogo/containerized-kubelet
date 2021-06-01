@@ -1,8 +1,8 @@
-FROM alpine:3.13
+ARG ALPINE_VERSION
+FROM cloudtogo4edge/kube-node-base:alpine-${ALPINE_VERSION}
 
 RUN apk update \
-    && apk add iptables ip6tables ebtables \
-    && apk add conntrack-tools ipset kmod alpine-baselayout dpkg \
+    && apk add ip6tables ebtables ipset kmod alpine-baselayout dpkg \
     && rm -rf /var/cache/apk/*
 
 # Install iptables wrapper scripts to detect the correct iptables mode

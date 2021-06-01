@@ -34,13 +34,14 @@ docker run -d --restart=always --name=kubeletd --network=host --pid=host --privi
 	--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf \
 	--register-node --network-plugin=cni --config=/var/lib/kubelet/config.yaml --v=5
 
-docker pull cloudtogo4edge/kubelet:v1.21.0
-
 docker run -d --restart=always --name=kubeletd --network=host --pid=host --privileged \
 	--env HOSTNAME=ttu01 \
 	--env NODE_IP=10.10.57.3 \
 	--hostname=ttu01 \
 	--dns=10.0.4.4 \
+  -v /etc/machine-id:/etc/machine-id \
+  -v /var/lib/dbus/machine-id:/var/lib/dbus/machine-id \
+  -v /sys/devices/system:/sys/devices/system \
 	-v /var/run/docker.sock:/var/run/docker.sock \
 	-v /sys/fs/cgroup:/sys/fs/cgroup \
 	--mount type=bind,src=/var/lib/docker/aufs,dst=/var/lib/docker/aufs,bind-propagation=rshared \
@@ -48,10 +49,13 @@ docker run -d --restart=always --name=kubeletd --network=host --pid=host --privi
 	--mount type=bind,src=/var/lib/docker/containers,dst=/var/lib/docker/containers,bind-propagation=rshared \
 	--mount type=bind,src=/var/lib/kubelet,dst=/var/lib/kubelet,bind-propagation=rshared \
 	-v /var/log/pods:/var/log/pods \
-	-v /etc/kubernetes:/etc/kubernetes -v /opt/cni/net.d:/etc/cni/net.d \
-	docker.io/cloudtogo4edge/kubelet:v1.21.0@sha256:82351493ceae6936379563960dc8691a33813b369a286a2c2a39d3a31e767771 \
-	kubelet --network-plugin=cni --hostname-override=${HOSTNAME} --node-ip=${NODE_IP} --config=/var/lib/kubelet/config.yaml \
+	-v  /etc/kubernetes:/etc/kubernetes -v /etc/cni/net.d:/etc/cni/net.d \
+  -v /run/flannel:/run/flannel \
+  --entrypoint=kubelet \
+	cloudtogo4edge/kubelet:v1.16.15-cni \
+  --network-plugin=cni --hostname-override=ttu01 --node-ip=10.10.57.3 --config=/var/lib/kubelet/config.yaml \
 	--kubeconfig=/etc/kubernetes/kubelet.conf \
-	--register-node --v=5
+	--register-node \
+  --pod-infra-container-image=k8s.gcr.io/pause:3.2
 
 
