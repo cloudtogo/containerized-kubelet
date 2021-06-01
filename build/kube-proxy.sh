@@ -1,31 +1,20 @@
 #!/usr/bin/env bash
 
 set -x
+set -e
+
+source $(dirname "${BASH_SOURCE[0]}")/libs.sh
 
 PLATFORM=$1
 K8S_VERSIOIN=$2
+CRICTL_VERSION=$3
+CRI_TOOLS_BIN_PATH=$4
+ALPINE_VERSION=$5
 
-function ExistsImage() {
-  local num=${2:-3}
-  local manifests=$(docker manifest inspect $1 | jq '.manifests | length')
-  [ "$manifests" == "$num" ] && echo "exist" || echo ""
-}
+lib::build_image kube-node-base "" kube-node-base.dockerfile
+lib::build_image alpine-iptables "12.1.2" alpine-iptables/Dockerfile
+lib::build_image kube-node-binaries "${K8S_VERSIOIN}" kube-node-binaries.dockerfile
+lib::overwrite_image kube-proxy "${K8S_VERSIOIN}" kube-proxy.dockerfile
 
-echo "checking docker.io/cloudtogo4edge/alpine-iptables:v12.1.2"
-if [ "$(ExistsImage docker.io/cloudtogo4edge/alpine-iptables:v12.1.2)" == "" ]; then
-  echo "building image docker.io/cloudtogo4edge/alpine-iptables:v12.1.2"
-  pushd alpine-iptables
-  docker buildx build --push \
-    --platform=${PLATFORM} \
-    -t docker.io/cloudtogo4edge/alpine-iptables:v12.1.2 \
-    -f 3.13.dockerfile .
-  popd
-fi
-
-echo "building image docker.io/cloudtogo4edge/kube-proxy:v${K8S_VERSIOIN}"
-docker buildx build --platform=${PLATFORM} --push \
-  --build-arg K8S_VERSIOIN=${K8S_VERSIOIN} \
-  -t docker.io/cloudtogo4edge/kube-proxy:v${K8S_VERSIOIN} \
-  -f kube-proxy-alpine-3.13.dockerfile .
-
+set +e
 set +x
