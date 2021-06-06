@@ -4,6 +4,11 @@ This project aims to build multi-arch `kubelet` images and help get rid of depen
 especially for custom or embedded Linux distros. 
 
 It also tries to optimize on image size to work on devices that have limited storage capacity.
+Unlike k3s, it doesn't compress dependencies into binaries and extract them after installing.
+It tries to identify necessary components in different scenarios and provide just the required binaries.
+Users can pull images that just match their requirements.
+It also compresses non-daemon binaries via upx, such as cni-plugins, crictl, and kubeadm,
+those binaries will be only extracted in executing. 
 
 All images are based on alpine:3.13 with CGO enabled. 
 They are available on [cloudtogo4edge/kubelet](https://hub.docker.com/r/cloudtogo4edge/kubelet).

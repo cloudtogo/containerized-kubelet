@@ -30,10 +30,19 @@ RUN make WHAT=cmd/kubelet
 RUN make WHAT=cmd/kubeadm
 RUN make WHAT=cmd/kube-proxy
 
-FROM scratch
+FROM docker.io/cloudtogo4edge/upx:3.96 as compressor
 ARG CRI_TOOLS_BIN_PATH="build/bin"
 COPY --from=crictl /go/src/github.com/kubernetes-sigs/cri-tools/${CRI_TOOLS_BIN_PATH}/crictl /crictl/
-COPY --from=k8s /go/src/k8s.io/kubernetes/_output/bin/kubelet /kubelet/
+RUN for bin in /crictl/*; do upx --best $bin; done
 COPY --from=k8s /go/src/k8s.io/kubernetes/_output/bin/kubeadm /kubeadm/
-COPY --from=k8s /go/src/k8s.io/kubernetes/_output/bin/kube-proxy /kube-proxy/
+RUN for bin in /kubeadm/*; do upx --best $bin; done
 COPY --from=cni-plugins /go/src/github.com/containernetworking/plugins/bin /cni-plugins/
+RUN for bin in /cni-plugins/*; do upx --best $bin; done
+
+FROM scratch
+ARG CRI_TOOLS_BIN_PATH="build/bin"
+COPY --from=compressor /crictl /crictl/
+COPY --from=k8s /go/src/k8s.io/kubernetes/_output/bin/kubelet /kubelet/
+COPY --from=compressor /kubeadm /kubeadm/
+COPY --from=k8s /go/src/k8s.io/kubernetes/_output/bin/kube-proxy /kube-proxy/
+COPY --from=compressor /cni-plugins /cni-plugins/

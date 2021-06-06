@@ -1,7 +1,20 @@
 #!/usr/bin/env bash
 
 function lib::remote_image() {
-  docker pull --platform=${PLATFORM} $1 || echo ""
+  local imagePuller=${IMAGE_PULLER:-docker}
+  if [[ "${PLATFORM}" == "" ]]; then
+    eval ${imagePuller} pull $1 > /dev/null || echo "non-exist"
+  else
+    IFS=',' read -r -a platforms <<< "${PLATFORM}"
+    for platform in "${platforms[@]}"
+    do
+      result=$(eval ${imagePuller} pull --platform=${platform} $1 > /dev/null || echo "non-exist")
+      if [[ "${result}" == "non-exist" ]]; then
+        echo "${result}"
+        return
+      fi
+    done
+  fi
 }
 
 function lib::image_name() {
@@ -25,8 +38,8 @@ function lib::build_image() {
   local image=$(lib::image_name $name $version)
   local dockerfile=${3:-Dockerfile}
   echo "checking ${image}"
-  if [ "$(lib::remote_image ${image})" == "" ]; then
-    lib::overwrite_image $name $version "$dockerfile"
+  if [ "$(lib::remote_image ${image})" == "non-exist" ]; then
+    lib::overwrite_image "$name" "$version" "$dockerfile"
   fi
 }
 
@@ -36,9 +49,13 @@ function lib::overwrite_image() {
   local image=$(lib::image_name $name $version)
   local dockerfile=${3:-Dockerfile}
   local workdir=$(dirname ${dockerfile})
-  dockerfile=$(basename ${dockerfile})
+  local dockerfile=$(basename ${dockerfile})
+  local imageBuilder=${IMAGE_BUILDER:-docker}
+  local imageBuildCmd=${IMAGE_BUILD_CMD:-buildx}
+
   echo "building ${image}"
-  (cd "${workdir}" && docker buildx build --platform=${PLATFORM} \
+  (cd "${workdir}" && \
+    eval ${imageBuilder} ${imageBuildCmd} build --platform=${PLATFORM} \
     --build-arg CRI_TOOLS_BIN_PATH=${CRI_TOOLS_BIN_PATH:-build/bin} \
     --build-arg K8S_VERSIOIN=${K8S_VERSIOIN} \
     --build-arg CRICTL_VERSION=${CRICTL_VERSION} \
