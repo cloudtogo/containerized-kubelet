@@ -16,6 +16,14 @@ They are available on [cloudtogo4edge/kubelet](https://hub.docker.com/r/cloudtog
 We also provide a multi-arch kube-proxy image based on alpine3.13. Its size is less than half of the size of the official one.
 It is available on [cloudtogo4edge/kube-proxy](https://hub.docker.com/r/cloudtogo4edge/kube-proxy).
 
+- [Tags](#tags)
+    * [kubelet](#tag-style)
+    * [kube-proxy](#alpine-3.13-based-kube-proxy-image)
+- [Usage](#usage)
+    * [Join the cluster](#join-the-cluster)
+    * [Start kubelet](#start-kubelet)
+    * [About hostpath and local storage](#about-hostpath-and-local-storage)
+
 ## Tags
 
 ### Tag style
@@ -86,13 +94,90 @@ It is available on [cloudtogo4edge/kube-proxy](https://hub.docker.com/r/cloudtog
 
 ## Usage
 
+### Join the cluster
+
+Users can join nodes into a cluster via images with tags contain `kubeadm`.
+Before joining, users should create a bootstrap token via a authenticated kubeadm by running the command below.
+
+```shell script
+$ kubeadm token create --print-join-command
+kubeadm join control-plane.minikube.internal:8443 --token putlik.1dgfo3518jdyix3a     --discovery-token-ca-cert-hash sha256:33c6538ef24069827dbcac46e7b43079d2c4d471dc040fc330425bdd25c591c3
+```
+
+Then, two directories are required by kubelet on each node, which are `/etc/kubernetes` and `/var/lib/kubelet`.
+
+```shell script
+mkdir -p /etc/kubernetes /var/lib/kubelet
+```
+
+Users also need to start kubelet on nodes before executing `kubeadm join ...`. See [Start kubelet](#start-kubelet)
+
+#### Docker
+
+For docker, users can run the following command to join nodes.
+
+```shell script
+docker run --rm --network=host --pid=host --uts=host \
+  -v /etc/kubernetes:/etc/kubernetes \
+  -v /var/lib/kubelet:/var/lib/kubelet \
+  --entrypoint kubeadm \
+  cloudtogo4edge/kubelet:v1.20.7-kubeadm-alpine3.13 \
+  join control-plane.minikube.internal:8443 --token putlik.1dgfo3518jdyix3a     --discovery-token-ca-cert-hash sha256:33c6538ef24069827dbcac46e7b43079d2c4d471dc040fc330425bdd25c591c3
+```
+
+Note that, the script above,
+1. Needs two host paths `/etc/kubernetes` and `/var/lib/kubelet` to be mounted,
+2. Replaces the original entrypoint with `kubeadm` through `--entrypoint`,
+3. Runs the command `kubeadm token create` generated before.
+
+### Start kubelet
+
+The default entrypoint of the kubelet image is `kubelet --config=/var/lib/kubelet/config.yaml --register-node --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf`.
+If you use an image has a tag contains cni, a command line flag `--network-plugin=cni` is append automatically.
+The command line flags can be changed by passing custom arguments whiling creating the kubelet container as well as specifying `--entrypoint=kubelet`.
+
+#### Host Path Mounts
+
+| Source/Target | Propagation | Required | Description |
+| --- | --- | --- | --- |
+| `/etc/machine-id` `/var/lib/dbus/machine-id` `/sys/devices/system` | default | no | - |
+| `/sys/fs/cgroup` | default | yes | cgroups |
+| `/var/lib/kubelet` | **rshared** | yes | kubelet root |
+| `/var/log/pods` | default | yes | pod logs |
+| `/etc/kubernetes` | default | yes | kubelet configuration |
+| `/etc/cni/net.d` | default | if cni is used | CNI configuration |
+| `/run/flannel` | default | if flannel is used | run root of flannel |
+| Paths in the file `/var/lib/kubelet/config.yaml` | default | yes | kubelet configuration |
+
+#### Docker
+
+##### Particular host path mounts
+
+| Source/Target | Propagation | Required | Description |
+| --- | --- | --- | --- |
+| `/var/run/docker.sock` | default | yes | docker endpoint |
+| `/var/lib/docker/overlay2` | **rshared** | yes | docker storage root, it is various for different driver |
+| `/var/lib/docker/image/overlay2` | **rshared** | yes | docker image root, it is various for different driver |
+| `/var/lib/docker/containers` | **rshared** | yes | docker container root, it is various for different driver |
+
+Run the following command to start the kubelet container.
+```shell script
+docker run -d --restart=always --name=kubeletd --network=host --pid=host --uts=host --privileged \
+    -v /etc/machine-id:/etc/machine-id -v /var/lib/dbus/machine-id:/var/lib/dbus/machine-id -v /sys/devices/system:/sys/devices/system \
+    -v /sys/fs/cgroup:/sys/fs/cgroup \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    --mount type=bind,src=/var/lib/docker/`docker info -f '{{.Driver}}'`,dst=/var/lib/docker/`docker info -f '{{.Driver}}'`,bind-propagation=rshared \
+    --mount type=bind,src=/var/lib/docker/image/`docker info -f '{{.Driver}}'`,dst=/var/lib/docker/image/`docker info -f '{{.Driver}}'`,bind-propagation=rshared \
+    --mount type=bind,src=/var/lib/docker/containers,dst=/var/lib/docker/containers,bind-propagation=rshared \
+    --mount type=bind,src=/var/lib/kubelet,dst=/var/lib/kubelet,bind-propagation=rshared \
+    -v /var/log/pods:/var/log/pods \
+    -v /etc/kubernetes:/etc/kubernetes -v /etc/cni/net.d:/etc/cni/net.d \
+    cloudtogo4edge/kubelet:v1.20.7-cni-alpine3.13
+```
+
 ### About hostpath and local storage
 If the `kubelet` image is desired to work in container-based Linux Distro, such as CoreOS or Flatcar Container Linux, 
 hostpath volume should not be used because that nothing on host can be shared by containers. 
 Instead, users should save them in remote storage or attached devices.
 
 If you would like to use local storage, you need to manually mount those devices into the `kubelet` container.
-
-### Join the cluster
-
-### Start kubelet

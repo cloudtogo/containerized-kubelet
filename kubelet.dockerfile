@@ -7,7 +7,7 @@ FROM docker.io/cloudtogo4edge/kube-node-binaries:v${K8S_VERSIOIN}-alpine${ALPINE
 FROM docker.io/cloudtogo4edge/kube-node-base:alpine-${ALPINE_VERSION} as kubelet-only
 WORKDIR /
 COPY kubelet-config.yaml /var/lib/kubelet/config.yaml
-ENTRYPOINT ["kubelet", "--config=/var/lib/kubelet/config.yaml"]
+ENTRYPOINT ["kubelet", "--config=/var/lib/kubelet/config.yaml", "--register-node", "--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf", "--kubeconfig=/etc/kubernetes/kubelet.conf"]
 CMD []
 COPY --from=binaries /kubelet /usr/bin/
 
