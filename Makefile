@@ -11,7 +11,7 @@ ALPINE_VERSION := 3.13
 	./build/image.sh linux/arm/v7 1.16.15 $(CRICTL_VERSION) $(CRI_TOOLS_BIN_PATH) 3.12
 
 .PHONY: lts
-lts: 1.21.1 1.20.7 1.19.11 1.18.19
+lts: 1.21.2 1.20.8 1.19.12 1.18.20
 
 %:
 	$(eval K8S_VERSIOIN = $@)

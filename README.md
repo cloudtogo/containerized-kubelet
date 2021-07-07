@@ -27,6 +27,9 @@ It is available on [cloudtogo4edge/kube-proxy](https://hub.docker.com/r/cloudtog
         - [Docker](#docker-1)
         - [Containerd](#containerd-1)
     * [About hostpath and local storage](#about-hostpath-and-local-storage)
+- [Test](#test)
+    * [Setup a multi-node cluster](#setup-a-multi-node-cluster)
+    * [e2e test](#e2e-test)
 
 ## Tags
 
@@ -190,6 +193,7 @@ The following host paths should be mounted to the kubelet container.
 
 Host paths above should also be mounted. Run the following command to start the kubelet container.
 ```shell script
+mkdir -p /var/lib/kubelet /var/log/pods /etc/kubernetes
 docker run -d --restart=always --name=kubeletd --network=host --pid=host --uts=host --privileged \
     -v /etc/machine-id:/etc/machine-id -v /var/lib/dbus/machine-id:/var/lib/dbus/machine-id \
     -v /sys/fs/cgroup:/sys/fs/cgroup \
@@ -240,3 +244,15 @@ hostpath volume should not be used because that nothing on host can be shared by
 Instead, users should save them in remote storage or attached devices.
 
 If you would like to use local storage, you need to manually mount those devices into the `kubelet` container.
+
+## Test
+
+### Setup a multi-node cluster
+
+The `Vagrantfile` and its dependent scripts in [`test/k8s-e2e`](https://github.com/cloudtogo/containerized-kubelet/tree/master/test/k8s-e2e) can create a 2-node cluster using the current project.
+If you use vagrant and **VirtualBox** as the virtual machine driver,
+you can easily install project [vagrant-lan](https://github.com/warm-metal/vagrant-lan) then run `vagrant up` in the directory `test/k8s-e2e` to start a new cluster.
+
+You can also modify the variable `K8S_VERSION` in the Vagrantfile to change the version of kubernetes. 
+
+### e2e test
