@@ -77,6 +77,10 @@ jobs:
               }
 
               console.log("New releases ", newReleases);
+              if (newReleases.length == 0) {
+                console.log("no new release found");
+                return;
+              }
 
               const newIssue = await github.issues.create({
                 owner: "cloudtogo",
