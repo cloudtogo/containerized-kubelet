@@ -258,7 +258,7 @@ jobs:
               }
 
               console.log("Loading the local README template");
-              var data = await readFile('hack/github/README.md.tmpl', {encoding: 'utf8'});
+              var data = await require('fs/promises').readFile('README.md.tmpl', {encoding: 'utf8'});
               const placeholder = '==IMAGE-README-PLACEHOLDER==';
 
               console.log("Creating new README blob");
