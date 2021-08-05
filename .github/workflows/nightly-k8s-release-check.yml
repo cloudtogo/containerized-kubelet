@@ -246,7 +246,7 @@ jobs:
 
               console.log("Loading the local README template");
               const readReadMeTemplate = () => new Promise((resolve, reject) => {
-                require('fs').readFile('README.md.tmpl', {encoding: 'utf8'}, (err, data) => {
+                require('fs').readFile('hack/github/README.md.tmpl', {encoding: 'utf8'}, (err, data) => {
                   if (err) {
                     reject(err);
                     return;
