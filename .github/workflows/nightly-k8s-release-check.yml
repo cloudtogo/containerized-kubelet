@@ -19,13 +19,13 @@ jobs:
             (async () => {
               const releaseLabel = "release";
               const [releases, issues] = await Promise.all([
-                github.repos.listReleases({
+                octokit.rest.repos.listReleases({
                   owner: "kubernetes",
                   repo: "kubernetes",
                   per_page: 30,
                   page: 1,
                 }),
-                github.issues.listForRepo({
+                octokit.rest.issues.listForRepo({
                   owner: "cloudtogo",
                   repo: "containerized-kubelet",
                   state: "all",
@@ -33,11 +33,6 @@ jobs:
                   page: 1,
                 }),
               ]);
-
-              if (issues.status != 200) {
-                console.error("[issue] http failure %d", issues.status);
-                throw new Error("http failure");
-              }
 
               var versionInNumber = (v) => {
                 // A version is in the manner of 'v1.xx.xx'.
@@ -62,18 +57,19 @@ jobs:
                   }
 
                   // https://github.com/cloudtogo/containerized-kubelet/issues/13
-                  if (issue.number != 13 && issue.pull_request) {
+                  if (issue.number != 13 && !issue.pull_request) {
                     console.log("Issue %d wasn't merged", issue.number);
                     continue;
                   }
 
                   if (issue.pull_request) {
-                    const merged = await github.pulls.checkIfMerged({
-                      owner: "cloudtogo",
-                      repo: "containerized-kubelet",
-                      pull_number: issue.number,
-                      });
-                    if (merged.status != 204) {
+                    try {
+                      const merged = await octokit.rest.pulls.checkIfMerged({
+                        owner: "cloudtogo",
+                        repo: "containerized-kubelet",
+                        pull_number: issue.number,
+                        });
+                    } catch (error) {
                       console.log("Issue %d wasn't merged", issue.number);
                       continue;
                     }
@@ -90,11 +86,6 @@ jobs:
               }
 
               console.log("Issue labels ", builtVersions);
-              
-              if (releases.status != 200) {
-                console.error("[kubernetes] http failure %d", releases.status);
-                throw new Error("http failure");
-              }
 
               var newReleases = [];
               for (const rel of releases.data) {
@@ -122,17 +113,13 @@ jobs:
               }
 
               newReleases.push(releaseLabel);
-              const newIssue = await github.issues.create({
+              await octokit.rest.issues.create({
                 owner: "cloudtogo",
                 repo: "containerized-kubelet",
                 title: "Build images for upgrade upstream LTS",
                 labels: newReleases.map((rel) => rel),
                 body: "This issue is created by a periodically running robot, for building images of the latest kubernetes LTS.",
               });
-              if (newIssue.status != 201) {
-                console.error("[new issue] http failure %d", newIssue.status);
-                throw new Error("http failure");
-              }
 
               console.log("Issue for %s created", releases);
             })();
