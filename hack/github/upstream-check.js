@@ -1,7 +1,7 @@
 const { Octokit } = require("@octokit/rest");
 
 const octokit = new Octokit({
-	auth: "",
+	auth: "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",
 	previews: ['jean-grey', 'symmetra'],
 	log: {
 	    debug: () => {},
@@ -52,18 +52,19 @@ const octokit = new Octokit({
 			}
 
 			// https://github.com/cloudtogo/containerized-kubelet/issues/13
-			if (issue.number != 13 && issue.pull_request) {
+			if (issue.number != 13 && !issue.pull_request) {
 				console.log("Issue %d wasn't merged", issue.number);
 				continue;
 			}
 
 			if (issue.pull_request) {
-				const merged = await octokit.rest.pulls.checkIfMerged({
-					owner: "cloudtogo",
-					repo: "containerized-kubelet",
-					pull_number: issue.number,
-				  });
-				if (merged.status != 204) {
+				try {
+					const merged = await octokit.rest.pulls.checkIfMerged({
+						owner: "cloudtogo",
+						repo: "containerized-kubelet",
+						pull_number: issue.number,
+					  });
+				} catch (error) {
 					console.log("Issue %d wasn't merged", issue.number);
 					continue;
 				}
