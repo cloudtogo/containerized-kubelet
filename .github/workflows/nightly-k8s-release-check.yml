@@ -19,13 +19,13 @@ jobs:
             (async () => {
               const releaseLabel = "release";
               const [releases, issues] = await Promise.all([
-                octokit.rest.repos.listReleases({
+                github.repos.listReleases({
                   owner: "kubernetes",
                   repo: "kubernetes",
                   per_page: 30,
                   page: 1,
                 }),
-                octokit.rest.issues.listForRepo({
+                github.issues.listForRepo({
                   owner: "cloudtogo",
                   repo: "containerized-kubelet",
                   state: "all",
@@ -64,7 +64,7 @@ jobs:
 
                   if (issue.pull_request) {
                     try {
-                      const merged = await octokit.rest.pulls.checkIfMerged({
+                      const merged = await github.pulls.checkIfMerged({
                         owner: "cloudtogo",
                         repo: "containerized-kubelet",
                         pull_number: issue.number,
@@ -113,7 +113,7 @@ jobs:
               }
 
               newReleases.push(releaseLabel);
-              await octokit.rest.issues.create({
+              await github.issues.create({
                 owner: "cloudtogo",
                 repo: "containerized-kubelet",
                 title: "Build images for upgrade upstream LTS",
