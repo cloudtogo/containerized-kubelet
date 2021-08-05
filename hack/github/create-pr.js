@@ -1,5 +1,4 @@
 const { Octokit } = require("@octokit/rest");
-const { readFile } = require('fs/promises');
 
 const octokit = new Octokit({
 	auth: "",
@@ -130,7 +129,17 @@ ${kubeVersions.map(v => `* [\`${v}-alpine3.13\`]()`).join("\n")}`;
 	}
 
 	console.log("Loading the local README template");
-	var data = await readFile('README.md.tmpl', {encoding: 'utf8'});
+	const readReadMeTemplate = () => new Promise((resolve, reject) => {
+		require('fs').readFile('README.md.tmpl', {encoding: 'utf8'}, (err, data) => {
+			if (err) {
+				reject(err);
+				return;
+			}
+
+			resolve(data);
+		});
+	});
+	var data = await readReadMeTemplate();
 	const placeholder = '==IMAGE-README-PLACEHOLDER==';
 
 	console.log("Creating new README blob");
