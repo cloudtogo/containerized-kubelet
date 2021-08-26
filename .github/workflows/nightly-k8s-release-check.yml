@@ -15,6 +15,7 @@ jobs:
       - name: check latest releases
         uses: actions/github-script@v4.0.2
         with:
+          token: ${{ secrets.WORKFLOW_TOKEN }}
           script: |
             (async () => {
               const releaseLabel = "release";
