@@ -20,7 +20,7 @@ jobs:
 
             console.log("Work for PR#" + prNumber);
 
-            const pr = await github.issues.get({
+            const { data: pr }  = await github.issues.get({
               owner: "cloudtogo",
               repo: "containerized-kubelet",
               issue_number: prNumber,
@@ -70,7 +70,7 @@ jobs:
             if (!prNumberMatch) throw new Error("Reference not found.");
             const [, prNumber] = prNumberMatch;
 
-            const pr = await github.issues.get({
+            const { data: pr }  = await github.issues.get({
               owner: "cloudtogo",
               repo: "containerized-kubelet",
               issue_number: prNumber,
