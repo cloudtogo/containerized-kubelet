@@ -12,7 +12,7 @@ ALPINE_VERSION=$5
 
 lib::build_image kube-node-base "" kube-node-base.dockerfile
 lib::build_image alpine-iptables "12.1.2" alpine-iptables/Dockerfile
-PLATFORM= lib::build_image kubernetes-source "${K8S_VERSIOIN}" kubernetes-src.dockerfile
+PLATFORM=linux/amd64 lib::build_image kubernetes-source "${K8S_VERSIOIN}" kubernetes-src.dockerfile
 lib::build_image kube-node-binaries "${K8S_VERSIOIN}" kube-node-binaries.dockerfile
 TARGET=kubelet-only lib::overwrite_image kubelet "${K8S_VERSIOIN}" kubelet.dockerfile
 TARGET=with-cni lib::overwrite_image kubelet "${K8S_VERSIOIN}-cni" kubelet.dockerfile
