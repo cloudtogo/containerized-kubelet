@@ -7,6 +7,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
     steps:
     - name: validate version
       uses: actions/github-script@v4.0.2
@@ -56,9 +58,11 @@ jobs:
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
     - name: build image
       if: ${{ env.KUBE_VERSIONS != '' }}
-      run: make ${KUBE_VERSIONS}
+      run: make `echo ${KUBE_VERSIONS} | sed 's/v//g'`
   e2e:
     runs-on: macos-latest
+    strategy:
+      max-parallel: 1
     steps:
     - name: validate version
       uses: actions/github-script@v4.0.2
