@@ -7,8 +7,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 1
     steps:
     - name: validate version
       uses: actions/github-script@v4.0.2
@@ -61,8 +59,7 @@ jobs:
       run: make `echo ${KUBE_VERSIONS} | sed 's/v//g'`
   e2e:
     runs-on: macos-latest
-    strategy:
-      max-parallel: 1
+    needs: build
     steps:
     - name: validate version
       uses: actions/github-script@v4.0.2
