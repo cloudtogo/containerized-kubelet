@@ -1,320 +1,38 @@
 name: build-k8s-image
 
 on:
-  pull_request:
-    branches: [ master ]
+  issue_comment:
+    types: [created, edited]
 
 jobs:
   build:
+    if: ${{ github.event.issue.pull_request && github.event.issue.state == 'open' && contains(github.event.issue.labels.*.name, 'release') && github.event.comment.body == '/build' }}
+    env:
+      ISSUE_NUMBER: ${{ github.event.issue.number }}
+      ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ' ') }}
     runs-on: ubuntu-latest
     steps:
-    - name: validate version
+    - uses: actions/checkout@v2
+    - name: comment as replies
       uses: actions/github-script@v4.0.2
       with:
         script: |
           (async () => {
-            const defaultLabel = "release";
-            const prNumberMatch = /refs\/pull\/(\d+)\/merge/g.exec(process.env.GITHUB_REF);
-            if (!prNumberMatch) throw new Error("Reference not found.");
-            const [, prNumber] = prNumberMatch;
-
-            console.log("Work for PR#" + prNumber);
-
-            const { data: pr }  = await github.issues.get({
-              owner: "cloudtogo",
-              repo: "containerized-kubelet",
-              issue_number: prNumber,
-            });
-
-            if (!pr.labels) {
-              console.log("Not a PR for building kubernetes releases");
-              return;
-            }
-
-            const kubeVersions = pr.labels.reduce((versions, l) => { if (l.name != defaultLabel) versions.push(l.name); return versions;}, []);
-            kubeVersions.reverse();
-
-            if (kubeVersions.length == 0) {
-              console.log("Not a PR for building kubernetes releases");
-              return;
-            }
-
-            console.log("Kubernetes versions are " + kubeVersions.join());
-
-            require('fs').appendFileSync(process.env.GITHUB_ENV, "KUBE_VERSIONS=" + kubeVersions.join(" "));
+            await require('./hack/github/action-lib').commentPR(github, "Building images...");
           })();
-    - uses: actions/checkout@v2
-      if: ${{ env.KUBE_VERSIONS != '' }}
     - uses: docker/setup-qemu-action@v1
-      if: ${{ env.KUBE_VERSIONS != '' }}
     - uses: docker/setup-buildx-action@v1
-      if: ${{ env.KUBE_VERSIONS != '' }}
     - uses: docker/login-action@v1
-      if: ${{ env.KUBE_VERSIONS != '' }}
       with:
         username: ${{ secrets.DOCKERHUB_USER }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
     - name: build image
-      if: ${{ env.KUBE_VERSIONS != '' }}
-      run: make ${KUBE_VERSIONS}
-  e2e:
-    runs-on: macos-latest
-    steps:
-    - name: validate version
+      run: make `echo ${ISSUE_LABELS} | sed 's/release//g' | sed 's/v//g'`
+    - name: start e2e test
       uses: actions/github-script@v4.0.2
       with:
+        github-token: ${{ secrets.WORKFLOW_TOKEN }}
         script: |
           (async () => {
-            const defaultLabel = "release";
-            const prNumberMatch = /refs\/pull\/(\d+)\/merge/g.exec(process.env.GITHUB_REF);
-            if (!prNumberMatch) throw new Error("Reference not found.");
-            const [, prNumber] = prNumberMatch;
-
-            const { data: pr }  = await github.issues.get({
-              owner: "cloudtogo",
-              repo: "containerized-kubelet",
-              issue_number: prNumber,
-            });
-
-            if (!pr.labels) {
-              console.log("Not a PR for building kubernetes releases");
-              return;
-            }
-
-            const kubeVersions = pr.labels.reduce((versions, l) => { if (l.name != defaultLabel) versions.push(l.name); return versions;}, []);
-            kubeVersions.reverse();
-
-            if (kubeVersions.length == 0) {
-              console.log("Not a PR for building kubernetes releases");
-              return;
-            }
-
-            require('fs').appendFileSync(process.env.GITHUB_ENV, "KUBE_VERSIONS=" + kubeVersions.join(" "));
-            require('fs').appendFileSync(process.env.GITHUB_ENV, "LATEST_KUBE_VERSION=" + kubeVersions[0]);
+            await require('./hack/github/action-lib').commentForSizeCalc(github);
           })();
-    - uses: actions/checkout@v2
-      if: ${{ env.KUBE_VERSIONS != '' }}
-    - name: e2e test
-      if: ${{ env.LATEST_KUBE_VERSION != '' }}
-      run: |
-        vagrant plugin install vagrant-scp
-        mkdir -p /tmp/lan
-        curl -skL https://raw.githubusercontent.com/warm-metal/vagrant-lan/master/gateway/Vagrantfile -o /tmp/lan/Vagrantfile
-        pushd /tmp/lan
-        vagrant up
-        popd
-        pushd test/k8s-e2e
-        vagrant up
-        vagrant ssh k8s-e2e-m1 -c 'sudo -E sonobuoy run --mode=certified-conformance --wait'
-        REPORT=$(vagrant ssh k8s-e2e-m1 -c 'sudo -E sonobuoy retrieve' 2>/dev/null)
-        vagrant scp k8s-e2e-m1:/home/vagrant/${REPORT} ../../sonobuoy.tar.gz
-        popd
-    - uses: docker/setup-buildx-action@v1
-      if: ${{ env.KUBE_VERSIONS != '' }}
-    - name: udpate size in README
-      uses: actions/github-script@v4.0.2
-      if: ${{ env.KUBE_VERSIONS != '' }}
-      env:
-        PR_OWNER: ${{ secrets.WORKFLOW_PR_OWNER }}
-      with:
-        script: |
-          (async () => {
-            const kubeVersions = process.env.KUBE_VERSIONS.split(" ");
-
-            const platforms = [
-                "amd64",
-                "arm64",
-                "arm/v7",
-            ];
-
-            const httpsGet = (url) => new Promise((resolve, reject) => {
-            require('https').get(url, (res) => {
-                    res.on('data', (d) => {
-                        if (res.statusCode != 200) {
-                            reject(res.statusCode);
-                            return;
-                        }
-
-                        resolve(JSON.parse(d));
-                    });
-                }).on('error', reject);
-            });
-
-            const readImageSize = async (repo, tag) => {
-                var imageSize = {};
-                // repo should be in the format of "cloudtogo4edge/kubelet".
-                const image = `${repo}:${tag}`;
-                const imageSpec = await httpsGet(`https://hub.docker.com/v2/repositories/${repo}/tags/?name=${tag}`);
-                if (imageSpec.count != 1) {
-                    throw new Error(`image ${image} not found`);
-                }
-
-                for (const i of imageSpec.results[0].images) {
-                    var platform = i.architecture;
-                    if (i.variant) {
-                        platform += "/" + i.variant;
-                    }
-
-                    imageSize[platform] = {
-                        Com: (parseFloat(i.size) / (1 << 20)).toFixed(2),
-                        Ex: 0,
-                    };
-                }
-
-                for (const platform of platforms) {
-                    require('child_process').execSync(`docker image pull --platform linux/${platform} ${image}`);
-                    const exSize = require('child_process').execSync(`docker image inspect -f '{{.Size}}' ${image}`);
-                    imageSize[platform].Ex = (parseFloat(exSize, 10) / (1 << 20)).toFixed(2);
-                }
-
-                return imageSize;
-            }
-
-            const imageCategory = [
-                "alpine3.13",
-                "flannel-alpine3.13",
-                "cni-alpine3.13",
-                "kubeadm-alpine3.13",
-                "kubeadm-cni-alpine3.13"
-            ];
-
-            var readmeSegments = [];
-
-            for (const version of kubeVersions) {
-                var readme = `#### ${version}
-
-            [\`cloudtogo4edge/kubelet ${version}\`](https://hub.docker.com/r/cloudtogo4edge/kubelet/tags?page=1&ordering=last_updated&name=${version})
-
-            | Tag | amd64 | arm64 | arm32v7 |
-            | --- | --- | --- | --- |`;
-
-                for (const category of imageCategory) {
-                    const imageSize = await readImageSize("cloudtogo4edge/kubelet", `${version}-${category}`);
-                    readme += `|[\`${version}-${category}\`]()| \`${imageSize.amd64.Com}MB / ${imageSize.amd64.Ex}MB\`|\`${imageSize.arm64.Com}MB / ${imageSize.arm64.Ex}MB\`|\`${imageSize["arm/v7"].Com}MB / ${imageSize["arm/v7"].Ex}MB\`|`;
-                }
-
-                readmeSegments.push(readme);
-            }
-
-            const kubeproxyReadMeTmpl = `#### Alpine 3.13 based kube-proxy image
-
-            [\`cloudtogo4edge/kube-proxy\`](https://hub.docker.com/r/cloudtogo4edge/kube-proxy)
-
-            ${kubeVersions.map(v => `* [\`${v}-alpine3.13\`]()`).join("\n")}`;
-
-            readmeSegments.push(kubeproxyReadMeTmpl);
-
-            console.log("Fetching HEAD");
-            const head = await github.git.getRef({
-              owner: "cloudtogo",
-              repo: "containerized-kubelet",
-              ref: process.env.GITHUB_HEAD_REF,
-            })
-
-            console.log("Fetching HEAD");
-            const headCommit = await github.git.getCommit({
-              owner: "cloudtogo",
-              repo: "containerized-kubelet",
-              commit_sha: head.data.object.sha,
-            });
-
-            console.log("Fetching HEAD tree");
-            var headTree = await github.git.getTree({
-              owner: "cloudtogo",
-              repo: "containerized-kubelet",
-              tree_sha: headCommit.data.tree.sha,
-            });
-
-            if (headTree.data.truncated) {
-              throw new Error("head tree is truncated");
-            }
-
-            console.log("Loading the local README template");
-            const readFile = (f) => new Promise((resolve, reject) => {
-              require('fs').readFile(f, {encoding: 'utf8'}, (err, data) => {
-                if (err) {
-                  reject(err);
-                  return;
-                }
-
-                resolve(data);
-              });
-            });
-            var data = await readReadMeTemplate('README.md.tmpl');
-            const placeholder = '==IMAGE-README-PLACEHOLDER==';
-
-            console.log("Creating new README blob");
-            const newReadMe = await github.git.createBlob({
-              owner: "cloudtogo",
-              repo: "containerized-kubelet",
-              content: data.replace(placeholder, readmeSegments.join("\n")),
-              encoding: "utf-8",
-            });
-
-            for (var treeItem of headTree.data.tree) {
-              if (treeItem.path == "README.md") {
-                treeItem.sha = newReadMe.data.sha;
-                treeItem.url = newReadMe.data.url
-                break
-              }
-            }
-
-            console.log("Creating blob for the conformance test");
-            const newSonobuoy = await github.git.createBlob({
-              owner: "cloudtogo",
-              repo: "containerized-kubelet",
-              content: await readFile('sonobuoy.tar.gz'),
-              encoding: "utf-8",
-            });
-
-            var found = false;
-            for (var treeItem of headTree.data.tree) {
-              if (treeItem.path == "sonobuoy.tar.gz") {
-                treeItem.sha = newSonobuoy.data.sha;
-                treeItem.url = newSonobuoy.data.url;
-                found = true;
-                break
-              }
-            }
-
-            if (!found) {
-              headTree.data.tree.push({
-                path: "sonobuoy.tar.gz",
-                type: "blob",
-                sha: newSonobuoy.data.sha,
-                url: newSonobuoy.data.url,
-              });
-            }
-
-            console.log("Creating new commit tree");
-            const newTree = await github.git.createTree({
-              owner: "cloudtogo",
-              repo: "containerized-kubelet",
-              tree: headTree.data.tree,
-            });
-
-            console.log("Committing new README");
-            const newCommit = await github.git.createCommit({
-              owner: "cloudtogo",
-              repo: "containerized-kubelet",
-              message: "Update image size and sonobuoy report",
-              tree: newTree.data.sha,
-              parents: [ head.data.object.sha ],
-              author: {
-                name: "Kitt Hsu",
-                email: "kitt.hsu@gmail.com"
-              }
-            })
-
-            const defaultLabel = "release";
-            const prNumberMatch = /refs\/pull\/(\d+)\/merge/g.exec(process.env.GITHUB_REF);
-            if (!prNumberMatch) throw new Error("Reference not found.");
-            const [, prNumber] = prNumberMatch;
-
-            await github.issues.createComment({
-              owner: "cloudtogo",
-              repo: "containerized-kubelet",
-              issue_number: prNumber,
-              body: `@${process.env.PR_OWNER} All images are build and tested. Please merge the PR.`,
-            });
-          })()

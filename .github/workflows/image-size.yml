@@ -1,0 +1,35 @@
+name: save-image-size
+
+on:
+  issue_comment:
+    types: [created, edited]
+
+jobs:
+  check-size:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.issue.pull_request && contains(github.event.issue.labels.*.name, 'release') && github.event.comment.body == '/size' }}
+    env:
+      ISSUE_NUMBER: ${{ github.event.issue.number }}
+      ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ' ') }}
+    steps:
+    - uses: docker/setup-qemu-action@v1
+    - uses: docker/setup-buildx-action@v1
+    - uses: actions/checkout@v2
+    - name: comment as replies
+      uses: actions/github-script@v4.0.2
+      with:
+        script: |
+          (async () => {
+            await require('./hack/github/action-lib').commentPR(github, "Calculating image size...");
+          })();
+    - name: udpate size in README
+      uses: actions/github-script@v4.0.2
+      env:
+        PR_OWNER: ${{ secrets.WORKFLOW_PR_OWNER }}
+      with:
+        github-token: ${{ secrets.WORKFLOW_TOKEN }}
+        script: |
+          (async () => {
+            await require('./hack/github/action-lib').updateImageSizeInPR(github);
+            await require('./hack/github/action-lib').commentPR(github, `@${process.env.PR_OWNER} All images are build and tested. Please merge the PR.`);
+          })()

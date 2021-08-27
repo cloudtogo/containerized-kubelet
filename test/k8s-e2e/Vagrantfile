@@ -5,10 +5,10 @@ require 'resolv'
 K8S_VERSION = ENV["LATEST_KUBE_VERSION"] || "v1.21.1"
 
 CLUSTER_NAME = File.basename(File.expand_path(File.dirname(__FILE__)))
-NUM_VMS = 2
+NUM_VMS = 1
 NUM_CPU_CORES = 2
 CAP_MEMORY = 4096
-BASE_BOX = "ubuntu/bionic64"
+BASE_BOX = "alvistack/ubuntu-18.04"
 
 # DO NOT modify unless being necessary
 VM_LAN = "vboxnet0"
@@ -45,42 +45,32 @@ def test_internet_connectivity
 end
 
 Vagrant.configure("2") do |config|
-    config.trigger.before :up do |t|
-    t.info = "Preparing network"
-    t.ruby do |env, m|
-      puts "fetching the LAN gateway machine #{GATEWAY_MACHINE}"
-      if !is_gateway_running?
-        puts "starting gateway #{GATEWAY_MACHINE}"
-        `VBoxManage startvm #{GATEWAY_MACHINE} --type headless`
-      end
-
-      puts "fetching address of #{m.config.vm.hostname}"
-      r = Vagrant::Util::Subprocess.execute(
-        'ssh', "-i", ROOT_RSA,
-        '-o', 'StrictHostKeyChecking=no',
-        "vagrant@#{VM_LAN_GATEWAY_IP}",
-        "sudo /usr/local/bin/mac_ip_alloc.sh #{m.config.vm.hostname} #{VM_LAN_IP_PREFIX}",
-        :notify => [:stdout, :stderr],)
-
-      addr = r.stdout.split(/\s+/)
-      raise r.stdout if addr.length != 2
-      mac = addr[0]
-      ip = addr[1]
-
-      puts "got ip #{ip}, mac #{mac}"
-
-      m.config.vm.network :private_network, :name => VM_LAN, :adapter => 1, :ip => ip, :netmask => VM_LAN_MASK, :mac => mac, auto_config: false
-      m.config.ssh.host = ip
-    end
-  end
-
   config.trigger.after :halt, :destroy do |t|
     t.info = "Stopping gateway"
-    t.ruby do |env, m|
-      runningVM = `vagrant global-status | grep running | awk '{ print $2 }'`
-      runningVM.strip!
-      if runningVM == "" || runningVM == GATEWAY_MACHINE
-        `VBoxManage controlvm #{GATEWAY_MACHINE} acpipowerbutton`
+    config.trigger.after :halt, :destroy do |t|
+      t.info = "Stopping gateway"
+      t.ruby do |env, m|
+        runningVM = `vagrant global-status | grep virtualbox | grep running | awk '{ print $2 }'`
+        runningVM.strip!
+        if runningVM == "" || runningVM == GATEWAY_MACHINE
+          `VBoxManage controlvm #{GATEWAY_MACHINE} acpipowerbutton`
+          next
+        end
+  
+        if runningVM.match(/#{CLUSTER_NAME}-m\d+/)
+          puts "There are our guests still running"
+          next
+        end
+        
+        puts "Try to prune the vagrant status."
+        `vagrant global-status --prune`
+        runningVM = `vagrant global-status | grep virtualbox | grep running | awk '{ print $2 }'`
+        runningVM.strip!
+        if runningVM == "" || runningVM == GATEWAY_MACHINE
+          `VBoxManage controlvm #{GATEWAY_MACHINE} acpipowerbutton`
+        else
+          puts "VM #{runningVM} are still running."
+        end
       end
     end
   end
@@ -110,76 +100,93 @@ Vagrant.configure("2") do |config|
 
       master.vm.hostname = "m#{i}" + DOMAIN_SUFFIX
       master.vm.box = BASE_BOX
-      master.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh", disabled: true
-      master.ssh.port = 22
-      if is_gateway_running?
-        begin
-          r = Resolv::DNS.new(:nameserver => VM_LAN_GATEWAY_IP)
-          r.timeouts = 2
-          master.ssh.host = r.getaddress(master.vm.hostname).to_s
-        rescue
-          puts "address of the machine #{master.vm.hostname} is not ready yet."
+      
+      if ARGV[0] == "up"
+        puts "fetching the LAN gateway machine #{GATEWAY_MACHINE}"
+        if !is_gateway_running?
+          puts "starting gateway #{GATEWAY_MACHINE}"
+          `VBoxManage startvm #{GATEWAY_MACHINE} --type headless`
         end
-      end
 
-      master.vm.provision :shell, inline: "hostnamectl set-hostname " + master.vm.hostname
-      master.vm.provision :shell, inline: "touch /etc/cloud/cloud-init.disabled"
-      master.vm.provision :shell, inline: "systemctl disable systemd-resolved.service apt-daily.timer apt-daily-upgrade.timer apt-daily.service apt-daily-upgrade.service"
-      master.vm.provision :shell, inline: "systemctl stop systemd-resolved.service apt-daily.timer apt-daily-upgrade.timer apt-daily.service apt-daily-upgrade.service"
-      master.vm.provision :shell, inline: "rm -f /etc/resolv.conf"
-      master.vm.provision :shell, inline: "echo 'nameserver #{VM_LAN_GATEWAY_IP}' > /etc/resolv.conf"
+        puts "fetching address of #{master.vm.hostname}"
+        r = Vagrant::Util::Subprocess.execute(
+          'ssh', "-i", ROOT_RSA,
+          '-o', 'StrictHostKeyChecking=no',
+          "vagrant@#{VM_LAN_GATEWAY_IP}",
+          "sudo /usr/local/bin/mac_ip_alloc.sh #{master.vm.hostname} #{VM_LAN_IP_PREFIX}",
+          :notify => [:stdout, :stderr],)
 
-      # Set the cluster version
-      master.vm.provision :shell, inline: "echo 'export K8S_VERSION=#{K8S_VERSION}' > /etc/profile.d/k8s_version.sh"
+        addr = r.stdout.split(/\s+/)
+        raise r.stdout if addr.length != 2
+        mac = addr[0]
+        ip = addr[1]
 
-      # Install docker
-      master.vm.provision :shell, inline: "apt-get update && apt-get install apt-transport-https ca-certificates curl gnupg lsb-release -y"
-      master.vm.provision :shell, inline: "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg"
-      master.vm.provision :shell, inline: "apt-get update && apt-get install apt-transport-https ca-certificates curl gnupg lsb-release -y"
-      master.vm.provision :shell, inline: 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null'
-      master.vm.provision :shell, inline: "apt-get update && apt-get install docker-ce docker-ce-cli containerd.io -y"
+        puts "got ip #{ip}, mac #{mac}"
 
-      # Try to apply proxy configuration to the docker daemon.
-      if !test_internet_connectivity
-        httpProxy = ENV['http_proxy']
-        httpProxy = ENV['HTTP_PROXY'] if httpProxy.nil? || httpProxy.empty?
-        httpsProxy = ENV['https_proxy']
-        httpsProxy = ENV['HTTPS_PROXY'] if httpsProxy.nil? || httpsProxy.empty?
-        if (httpProxy.nil? || httpProxy.empty?) && (httpsProxy.nil? || httpsProxy.empty?)
-            puts "This machine can't access to k8s.gcr.io and no proxy configuration found."
+        master.vm.network :private_network, :name => VM_LAN, :adapter => 1, :ip => ip, :netmask => VM_LAN_MASK, :mac => mac, auto_config: false
+        master.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh", disabled: true
+        master.ssh.port = 22
+        master.ssh.host = ip
+
+        master.vm.provision :shell, inline: "hostnamectl set-hostname " + master.vm.hostname
+        master.vm.provision :shell, inline: "touch /etc/cloud/cloud-init.disabled"
+        master.vm.provision :shell, inline: "systemctl disable systemd-resolved.service apt-daily.timer apt-daily-upgrade.timer apt-daily.service apt-daily-upgrade.service"
+        master.vm.provision :shell, inline: "systemctl stop systemd-resolved.service apt-daily.timer apt-daily-upgrade.timer apt-daily.service apt-daily-upgrade.service"
+        master.vm.provision :shell, inline: "rm -f /etc/resolv.conf"
+        master.vm.provision :shell, inline: "echo 'nameserver #{VM_LAN_GATEWAY_IP}' > /etc/resolv.conf"
+
+        # Set the cluster version
+        master.vm.provision :shell, inline: "echo 'export K8S_VERSION=#{K8S_VERSION}' > /etc/profile.d/k8s_version.sh"
+
+        # Install docker
+        master.vm.provision :shell, inline: "apt-get update && apt-get install apt-transport-https ca-certificates curl gnupg lsb-release -y"
+        master.vm.provision :shell, inline: "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg"
+        master.vm.provision :shell, inline: "apt-get update && apt-get install apt-transport-https ca-certificates curl gnupg lsb-release -y"
+        master.vm.provision :shell, inline: 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null'
+        master.vm.provision :shell, inline: "apt-get update && apt-get install docker-ce docker-ce-cli containerd.io -y"
+
+        # Try to apply proxy configuration to the docker daemon.
+        if !test_internet_connectivity
+          httpProxy = ENV['http_proxy']
+          httpProxy = ENV['HTTP_PROXY'] if httpProxy.nil? || httpProxy.empty?
+          httpsProxy = ENV['https_proxy']
+          httpsProxy = ENV['HTTPS_PROXY'] if httpsProxy.nil? || httpsProxy.empty?
+          if (httpProxy.nil? || httpProxy.empty?) && (httpsProxy.nil? || httpsProxy.empty?)
+              puts "This machine can't access to k8s.gcr.io and no proxy configuration found."
+          else
+              master.vm.provision :file, source: "docker.service", destination: "/tmp/docker.service"
+              master.vm.provision :shell, inline: "mv /tmp/docker.service /lib/systemd/system/docker.service"
+              master.vm.provision :shell, inline: "sed -i \"s|HTTP_PROXY_URL|#{httpProxy}|g\" /lib/systemd/system/docker.service"
+              master.vm.provision :shell, inline: "sed -i \"s|HTTPS_PROXY_URL|#{httpsProxy}|g\" /lib/systemd/system/docker.service"
+              master.vm.provision :shell, inline: "systemctl daemon-reload && systemctl restart docker"
+          end
+        end
+
+        if i == 1
+          master.vm.provision :file, source: "kubeadm.yaml", destination: "/home/vagrant/kubeadm.yaml"
+          master.vm.provision :file, source: "flannel.yaml", destination: "/home/vagrant/flannel.yaml"
+          kubeCli="/tmp/kubernetes-client-linux-amd64.tar.gz"
+          if !File.file?("/tmp/kubernetes/client/bin/kubectl")
+              puts "Download kubectl"
+              `curl -skL https://storage.googleapis.com/kubernetes-release/release/#{K8S_VERSION}/kubernetes-client-linux-amd64.tar.gz -o #{kubeCli}`
+              `tar zxf #{kubeCli} -C /tmp`
+          end
+          master.vm.provision :file, source: "/tmp/kubernetes/client/bin/kubectl", destination: "/tmp/kubectl"
+          master.vm.provision :shell, inline: "mv /tmp/kubectl /usr/local/bin/"
+          
+          sonobuoy = "/tmp/sonobuoy.tar.gz"
+          if !File.file?("/tmp/sonobuoy")
+              puts "Download sonobuoy"
+              `curl -skL https://github.com/vmware-tanzu/sonobuoy/releases/download/v0.52.0/sonobuoy_0.52.0_linux_amd64.tar.gz -o #{sonobuoy}`
+              `tar zxf #{sonobuoy} -C /tmp`
+          end
+          master.vm.provision :file, source: "/tmp/sonobuoy", destination: "/tmp/sonobuoy"
+          master.vm.provision :shell, inline: "mv /tmp/sonobuoy /usr/local/bin/"
+
+          master.vm.provision :shell, path: "e2e-master.sh"
         else
-            master.vm.provision :file, source: "docker.service", destination: "/tmp/docker.service"
-            master.vm.provision :shell, inline: "mv /tmp/docker.service /lib/systemd/system/docker.service"
-            master.vm.provision :shell, inline: "sed -i \"s|HTTP_PROXY_URL|#{httpProxy}|g\" /lib/systemd/system/docker.service"
-            master.vm.provision :shell, inline: "sed -i \"s|HTTPS_PROXY_URL|#{httpsProxy}|g\" /lib/systemd/system/docker.service"
-            master.vm.provision :shell, inline: "systemctl daemon-reload && systemctl restart docker"
+          master.vm.provision :shell, path: "e2e-node.sh"
         end
-      end
-
-      if i == 1
-        master.vm.provision :file, source: "kubeadm.yaml", destination: "/home/vagrant/kubeadm.yaml"
-        master.vm.provision :file, source: "flannel.yaml", destination: "/home/vagrant/flannel.yaml"
-        kubeCli="/tmp/kubernetes-client-linux-amd64.tar.gz"
-        if !File.file?("/tmp/kubernetes/client/bin/kubectl")
-            puts "Download kubectl"
-            `curl -skL https://storage.googleapis.com/kubernetes-release/release/#{K8S_VERSION}/kubernetes-client-linux-amd64.tar.gz -o #{kubeCli}`
-            `tar zxf #{kubeCli} -C /tmp`
-        end
-        master.vm.provision :file, source: "/tmp/kubernetes/client/bin/kubectl", destination: "/tmp/kubectl"
-        master.vm.provision :shell, inline: "mv /tmp/kubectl /usr/local/bin/"
-        
-        sonobuoy = "/tmp/sonobuoy.tar.gz"
-        if !File.file?("/tmp/sonobuoy")
-            puts "Download sonobuoy"
-            `curl -skL https://github.com/vmware-tanzu/sonobuoy/releases/download/v0.52.0/sonobuoy_0.52.0_linux_amd64.tar.gz -o #{sonobuoy}`
-            `tar zxf #{sonobuoy} -C /tmp`
-        end
-        master.vm.provision :file, source: "/tmp/sonobuoy", destination: "/tmp/sonobuoy"
-        master.vm.provision :shell, inline: "mv /tmp/sonobuoy /usr/local/bin/"
-
-        master.vm.provision :shell, path: "e2e-master.sh"
-      else
-        master.vm.provision :shell, path: "e2e-node.sh"
       end
     end
   end

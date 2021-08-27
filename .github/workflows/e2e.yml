@@ -1,0 +1,63 @@
+name: e2e
+
+on:
+  issue_comment:
+    types: [created, edited]
+
+jobs:
+  e2e:
+    runs-on: macos-latest
+    if: ${{ github.event.issue.pull_request && contains(github.event.issue.labels.*.name, 'release') && github.event.comment.body == '/e2e' }}
+    env:
+      ISSUE_NUMBER: ${{ github.event.issue.number }}
+      ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ' ') }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: comment as replies
+      uses: actions/github-script@v4.0.2
+      with:
+        script: |
+          (async () => {
+            await require('./hack/github/action-lib').commentPR(github, "Start e2e tests...");
+          })();
+    - name: validate version
+      uses: actions/github-script@v4.0.2
+      with:
+        script: |
+          (async () => {
+            const kubeVersions = await require('./hack/github/action-lib').readKubeVersionFromLabels();
+            require('fs').appendFileSync(process.env.GITHUB_ENV, "LATEST_KUBE_VERSION=" + kubeVersions[0]);
+          })();
+    - name: show system info
+      run: |
+        system_profiler SPHardwareDataType
+    - name: e2e test
+      run: |
+        set -x
+        ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -q -N ""
+        vagrant -v
+        vagrant plugin install vagrant-scp
+        mkdir -p /tmp/lan
+        curl -skL https://raw.githubusercontent.com/warm-metal/vagrant-lan/master/gateway/Vagrantfile -o /tmp/lan/Vagrantfile
+        pushd /tmp/lan
+        vagrant up
+        popd
+        pushd test/k8s-e2e
+        export VAGRANT_DISABLE_VBOXSYMLINKCREATE=1
+        vagrant up --debug
+        vagrant ssh k8s-e2e-m1 -c 'sudo -E sonobuoy run --mode=certified-conformance --wait'
+        REPORT=$(vagrant ssh k8s-e2e-m1 -c 'sudo -E sonobuoy retrieve' 2>/dev/null)
+        vagrant scp k8s-e2e-m1:/home/vagrant/${REPORT} ../../sonobuoy.tar.gz
+        popd
+        set +x
+    - name: commit conformance report
+      uses: actions/github-script@v4.0.2
+      env:
+        PR_OWNER: ${{ secrets.WORKFLOW_PR_OWNER }}
+      with:
+        github-token: ${{ secrets.WORKFLOW_TOKEN }}
+        script: |
+          (async () => {
+            await require('./hack/github/action-lib').commitRootFile(github, process.env.GITHUB_REF, { path: "sonobuoy.tar.gz" }, "sonobuoy report for version " + process.env.LATEST_KUBE_VERSION);
+            await require('./hack/github/action-lib').commentForSizeCalc(github);
+          })()
