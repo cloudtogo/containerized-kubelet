@@ -90,6 +90,9 @@ jobs:
               return;
             }
 
+            console.log("Kubernetes versions are " + kubeVersions.join());
+            console.log("The latest version is " + kubeVersions[0]);
+
             require('fs').appendFileSync(process.env.GITHUB_ENV, "KUBE_VERSIONS=" + kubeVersions.join(" "));
             require('fs').appendFileSync(process.env.GITHUB_ENV, "LATEST_KUBE_VERSION=" + kubeVersions[0]);
           })();
@@ -110,6 +113,8 @@ jobs:
         REPORT=$(vagrant ssh k8s-e2e-m1 -c 'sudo -E sonobuoy retrieve' 2>/dev/null)
         vagrant scp k8s-e2e-m1:/home/vagrant/${REPORT} ../../sonobuoy.tar.gz
         popd
+    - uses: docker/setup-qemu-action@v1
+      if: ${{ env.KUBE_VERSIONS != '' }}
     - uses: docker/setup-buildx-action@v1
       if: ${{ env.KUBE_VERSIONS != '' }}
     - name: udpate size in README
