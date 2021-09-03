@@ -12,7 +12,7 @@ const readFile = (f) => new Promise((resolve, reject) => {
 });
 
 // file = { path: "", data: ""}
-module.exports.commitRootFile = async (branch, file, comment) => {
+module.exports.commitRootFile = async (github, branch, file, comment) => {
     console.log("Fetching %s", branch);
 
     const head = await github.git.getRef({
@@ -98,7 +98,7 @@ module.exports.commitRootFile = async (branch, file, comment) => {
     });
 }
 
-module.exports.checkUpstreamRelease = async () => {
+module.exports.checkUpstreamRelease = async (github) => {
   const [releases, issues] = await Promise.all([
     github.repos.listReleases({
       owner: "kubernetes",
@@ -212,7 +212,7 @@ module.exports.readKubeVersionFromLabels = () => {
   return kubeVersions;
 }
 
-module.exports.createPRForNewReleases = async () => {
+module.exports.createPRForNewReleases = async (github) => {
     const { ISSUE_NUMBER } = process.env;
 
     console.log("the target issue: %s", ISSUE_NUMBER);
@@ -291,7 +291,7 @@ module.exports.createPRForNewReleases = async () => {
       sha: process.env.GITHUB_SHA,
     });
 
-    await commitRootFile("refs/heads/" + branch, { path: "README.md", data: readmeBlob}, "Updates README for new releases " + kubeVersions.join(' '));
+    await commitRootFile(github, "refs/heads/" + branch, { path: "README.md", data: readmeBlob}, "Updates README for new releases " + kubeVersions.join(' '));
   
     console.log("Creating the new PR");
     await github.pulls.create({
@@ -305,7 +305,7 @@ module.exports.createPRForNewReleases = async () => {
     console.log("PR created");
 }
 
-module.exports.updateImageSizeInPR = async () => {
+module.exports.updateImageSizeInPR = async (github) => {
   const kubeVersions = readKubeVersionFromLabels();
 
   const platforms = [
@@ -395,10 +395,10 @@ module.exports.updateImageSizeInPR = async () => {
   const placeholder = '==IMAGE-README-PLACEHOLDER==';
   const readmeBlob = data.replace(placeholder, readmeSegments.join("\n"));
 
-  await commitRootFile(process.env.GITHUB_REF, { path: "README.md", data: readmeBlob}, "Updates image size for new releases " + kubeVersions.join(' '));
+  await commitRootFile(github, process.env.GITHUB_REF, { path: "README.md", data: readmeBlob}, "Updates image size for new releases " + kubeVersions.join(' '));
 }
 
-module.exports.commentPR = async (comment) => {
+module.exports.commentPR = async (github, comment) => {
     await github.issues.createComment({
       owner: "cloudtogo",
       repo: "containerized-kubelet",
@@ -407,14 +407,14 @@ module.exports.commentPR = async (comment) => {
     });
 }
 
-module.exports.commentForImageBuilding = async () => {
-  await commentPR("/build");
+module.exports.commentForImageBuilding = async (github) => {
+  await commentPR(github, "/build");
 }
 
-module.exports.commentForE2E = async () => {
-  await commentPR("/e2e");
+module.exports.commentForE2E = async (github) => {
+  await commentPR(github, "/e2e");
 }
 
-module.exports.commentForSizeCalc = async () => {
-  await commentPR("/size");
+module.exports.commentForSizeCalc = async (github) => {
+  await commentPR(github, "/size");
 }

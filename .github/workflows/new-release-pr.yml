@@ -19,6 +19,6 @@ jobs:
           github-token: ${{ secrets.WORKFLOW_TOKEN }}
           script: |
             (async () => {
-              await require('./hack/github/action-lib').createPRForNewReleases();
-              await require('./hack/github/action-lib').commentForImageBuilding();
+              await require('./hack/github/action-lib').createPRForNewReleases(github);
+              await require('./hack/github/action-lib').commentForImageBuilding(github);
             })();

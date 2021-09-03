@@ -43,6 +43,6 @@ jobs:
         github-token: ${{ secrets.WORKFLOW_TOKEN }}
         script: |
           (async () => {
-            await require('./hack/github/action-lib').commitRootFile(process.env.GITHUB_REF, { path: "sonobuoy.tar.gz" }, "sonobuoy report for version " + process.env.LATEST_KUBE_VERSION);
-            await require('./hack/github/action-lib').commentForSizeCalc();
+            await require('./hack/github/action-lib').commitRootFile(github, process.env.GITHUB_REF, { path: "sonobuoy.tar.gz" }, "sonobuoy report for version " + process.env.LATEST_KUBE_VERSION);
+            await require('./hack/github/action-lib').commentForSizeCalc(github);
           })()

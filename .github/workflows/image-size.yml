@@ -23,6 +23,6 @@ jobs:
         github-token: ${{ secrets.WORKFLOW_TOKEN }}
         script: |
           (async () => {
-            await require('./hack/github/action-lib').updateImageSizeInPR();
-            await require('./hack/github/action-lib').commentPR(`@${process.env.PR_OWNER} All images are build and tested. Please merge the PR.`);
+            await require('./hack/github/action-lib').updateImageSizeInPR(github);
+            await require('./hack/github/action-lib').commentPR(github, `@${process.env.PR_OWNER} All images are build and tested. Please merge the PR.`);
           })()
