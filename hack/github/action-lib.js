@@ -13,6 +13,10 @@ const readFile = (f) => new Promise((resolve, reject) => {
 
 // file = { path: "", data: ""}
 module.exports.commitRootFile = async (github, branch, file, comment) => {
+    if (branch.startsWith("refs/")) {
+      branch = branch.slice(5);
+    }
+
     console.log("Fetching %s", branch);
 
     const head = await github.git.getRef({
@@ -229,6 +233,8 @@ module.exports.createPRForNewReleases = async (github) => {
 
     var readmeSegments = [];
     const kubeVersions = module.exports.readKubeVersionFromLabels();
+    console.log("build PR for versions ", kubeVersions);
+
     for (const version of kubeVersions) {
       const imageData = {
         version: version,
