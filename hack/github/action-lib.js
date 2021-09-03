@@ -228,7 +228,7 @@ module.exports.createPRForNewReleases = async (github) => {
     };
 
     var readmeSegments = [];
-    const kubeVersions = readKubeVersionFromLabels();
+    const kubeVersions = module.exports.readKubeVersionFromLabels();
     for (const version of kubeVersions) {
       const imageData = {
         version: version,
@@ -291,7 +291,7 @@ module.exports.createPRForNewReleases = async (github) => {
       sha: process.env.GITHUB_SHA,
     });
 
-    await commitRootFile(github, "refs/heads/" + branch, { path: "README.md", data: readmeBlob}, "Updates README for new releases " + kubeVersions.join(' '));
+    await module.exports.commitRootFile(github, "refs/heads/" + branch, { path: "README.md", data: readmeBlob}, "Updates README for new releases " + kubeVersions.join(' '));
   
     console.log("Creating the new PR");
     await github.pulls.create({
@@ -306,7 +306,7 @@ module.exports.createPRForNewReleases = async (github) => {
 }
 
 module.exports.updateImageSizeInPR = async (github) => {
-  const kubeVersions = readKubeVersionFromLabels();
+  const kubeVersions = module.exports.readKubeVersionFromLabels();
 
   const platforms = [
       "amd64",
@@ -395,7 +395,7 @@ module.exports.updateImageSizeInPR = async (github) => {
   const placeholder = '==IMAGE-README-PLACEHOLDER==';
   const readmeBlob = data.replace(placeholder, readmeSegments.join("\n"));
 
-  await commitRootFile(github, process.env.GITHUB_REF, { path: "README.md", data: readmeBlob}, "Updates image size for new releases " + kubeVersions.join(' '));
+  await module.exports.commitRootFile(github, process.env.GITHUB_REF, { path: "README.md", data: readmeBlob}, "Updates image size for new releases " + kubeVersions.join(' '));
 }
 
 module.exports.commentPR = async (github, comment) => {
@@ -408,13 +408,13 @@ module.exports.commentPR = async (github, comment) => {
 }
 
 module.exports.commentForImageBuilding = async (github) => {
-  await commentPR(github, "/build");
+  await module.exports.commentPR(github, "/build");
 }
 
 module.exports.commentForE2E = async (github) => {
-  await commentPR(github, "/e2e");
+  await module.exports.commentPR(github, "/e2e");
 }
 
 module.exports.commentForSizeCalc = async (github) => {
-  await commentPR(github, "/size");
+  await module.exports.commentPR(github, "/size");
 }
