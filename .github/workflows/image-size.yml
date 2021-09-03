@@ -1,4 +1,4 @@
-name: build-k8s-image
+name: save-image-size
 
 on:
   issue_comment:

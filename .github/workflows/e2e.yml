@@ -1,4 +1,4 @@
-name: build-k8s-image
+name: e2e
 
 on:
   issue_comment:

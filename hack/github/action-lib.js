@@ -210,7 +210,7 @@ module.exports.checkUpstreamRelease = async (github) => {
 }
 
 module.exports.readKubeVersionFromLabels = () => {
-  var kubeVersions = process.env.ISSUE_LABELS.split(" ").reduce((versions, l) => { if (l.name != releaseLabel) versions.push(l.name); return versions;}, []);
+  var kubeVersions = process.env.ISSUE_LABELS.split(" ").reduce((versions, l) => { if (l != releaseLabel) versions.push(l); return versions;}, []);
   kubeVersions.sort();
   kubeVersions.reverse();
   return kubeVersions;
@@ -305,7 +305,7 @@ module.exports.createPRForNewReleases = async (github) => {
       repo: "containerized-kubelet",
       head: branch,
       base: "master",
-      issue: ISSUE_NUMBER,
+      issue: parseInt(ISSUE_NUMBER),
     });
 
     console.log("PR created");
