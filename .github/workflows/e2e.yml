@@ -7,7 +7,7 @@ on:
 jobs:
   e2e:
     runs-on: macos-latest
-    if: ${{ github.event.issue.pull_request && contains(github.event.issue.labels.*.name, "release") && github.event.comment.body == "/e2e" }}
+    if: ${{ github.event.issue.pull_request && contains(github.event.issue.labels.*.name, 'release') && github.event.comment.body == '/e2e' }}
     env:
       ISSUE_NUMBER: ${{ github.event.issue.number }}
       ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ' ') }}
