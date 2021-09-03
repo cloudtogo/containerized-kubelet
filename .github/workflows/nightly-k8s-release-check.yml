@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  upstream-check:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,5 +19,5 @@ jobs:
           github-token: ${{ secrets.WORKFLOW_TOKEN }}
           script: |
             (async () => {
-              await require('hack/github/action-lib').checkUpstreamRelease();
+              await require('./hack/github/action-lib').checkUpstreamRelease();
             })();

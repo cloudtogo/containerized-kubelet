@@ -18,7 +18,7 @@ jobs:
       with:
         script: |
           (async () => {
-            const kubeVersions = await require('hack/github/action-lib').readKubeVersionFromLabels();
+            const kubeVersions = await require('./hack/github/action-lib').readKubeVersionFromLabels();
             require('fs').appendFileSync(process.env.GITHUB_ENV, "LATEST_KUBE_VERSION=" + kubeVersions[0]);
           })();
     - name: e2e test
@@ -43,6 +43,6 @@ jobs:
         github-token: ${{ secrets.WORKFLOW_TOKEN }}
         script: |
           (async () => {
-            await require('hack/github/action-lib').commitRootFile(process.env.GITHUB_REF, { path: "sonobuoy.tar.gz" }, "sonobuoy report for version " + process.env.LATEST_KUBE_VERSION);
-            await require('hack/github/action-lib').commentForSizeCalc();
+            await require('./hack/github/action-lib').commitRootFile(process.env.GITHUB_REF, { path: "sonobuoy.tar.gz" }, "sonobuoy report for version " + process.env.LATEST_KUBE_VERSION);
+            await require('./hack/github/action-lib').commentForSizeCalc();
           })()

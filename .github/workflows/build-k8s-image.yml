@@ -27,5 +27,5 @@ jobs:
         github-token: ${{ secrets.WORKFLOW_TOKEN }}
         script: |
           (async () => {
-            await require('hack/github/action-lib').commentForE2E();
+            await require('./hack/github/action-lib').commentForE2E();
           })();
