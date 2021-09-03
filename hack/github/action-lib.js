@@ -12,7 +12,7 @@ const readFile = (f) => new Promise((resolve, reject) => {
 });
 
 // file = { path: "", data: ""}
-export async function commitRootFile(branch, file, comment) {
+module.exports.commitRootFile = async (branch, file, comment) => {
     console.log("Fetching %s", branch);
 
     const head = await github.git.getRef({
@@ -98,7 +98,7 @@ export async function commitRootFile(branch, file, comment) {
     });
 }
 
-export async function checkUpstreamRelease() {
+module.exports.checkUpstreamRelease = async () => {
   const [releases, issues] = await Promise.all([
     github.repos.listReleases({
       owner: "kubernetes",
@@ -205,14 +205,14 @@ export async function checkUpstreamRelease() {
   console.log("Issue for %s created", releases);
 }
 
-export function readKubeVersionFromLabels() {
+module.exports.readKubeVersionFromLabels = () => {
   var kubeVersions = process.env.ISSUE_LABELS.split(" ").reduce((versions, l) => { if (l.name != releaseLabel) versions.push(l.name); return versions;}, []);
   kubeVersions.sort();
   kubeVersions.reverse();
   return kubeVersions;
 }
 
-export async function createPRForNewReleases() {
+module.exports.createPRForNewReleases = async () => {
     const { ISSUE_NUMBER } = process.env;
 
     console.log("the target issue: %s", ISSUE_NUMBER);
@@ -305,7 +305,7 @@ export async function createPRForNewReleases() {
     console.log("PR created");
 }
 
-export async function updateImageSizeInPR() {
+module.exports.updateImageSizeInPR = async () => {
   const kubeVersions = readKubeVersionFromLabels();
 
   const platforms = [
@@ -398,7 +398,7 @@ export async function updateImageSizeInPR() {
   await commitRootFile(process.env.GITHUB_REF, { path: "README.md", data: readmeBlob}, "Updates image size for new releases " + kubeVersions.join(' '));
 }
 
-export async function commentPR(comment) {
+module.exports.commentPR = async (comment) => {
     await github.issues.createComment({
       owner: "cloudtogo",
       repo: "containerized-kubelet",
@@ -407,14 +407,14 @@ export async function commentPR(comment) {
     });
 }
 
-export async function commentForImageBuilding() {
+module.exports.commentForImageBuilding = async () => {
   await commentPR("/build");
 }
 
-export async function commentForE2E() {
+module.exports.commentForE2E = async () => {
   await commentPR("/e2e");
 }
 
-export async function commentForSizeCalc() {
+module.exports.commentForSizeCalc = async () => {
   await commentPR("/size");
 }
