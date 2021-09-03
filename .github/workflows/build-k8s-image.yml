@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    if: ${{ github.event.issue.pull_request && github.event.issue.state == "open" && contains(github.event.issue.labels*.name, "release") && github.event.comment.body == "/build" }}
+    if: ${{ github.event.issue.pull_request && github.event.issue.state == "open" && contains(github.event.issue.labels.*.name, "release") && github.event.comment.body == "/build" }}
     env:
       ISSUE_NUMBER: ${{ github.event.issue.number }}
       ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ' ') }}

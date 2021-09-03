@@ -7,7 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: ${{ !github.event.issue.pull_request && contains(github.event.issue.labels*.name, "release") }}
+    if: ${{ !github.event.issue.pull_request && contains(github.event.issue.labels.*.name, "release") }}
     env:
       ISSUE_NUMBER: ${{ github.event.issue.number }}
       ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ' ') }}

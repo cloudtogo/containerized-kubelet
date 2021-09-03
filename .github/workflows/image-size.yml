@@ -7,7 +7,7 @@ on:
 jobs:
   check-size:
     runs-on: ubuntu-latest
-    if: ${{ github.event.issue.pull_request && contains(github.event.issue.labels*.name, "release") && github.event.comment.body == "/size" }}
+    if: ${{ github.event.issue.pull_request && contains(github.event.issue.labels.*.name, "release") && github.event.comment.body == "/size" }}
     env:
       ISSUE_NUMBER: ${{ github.event.issue.number }}
       ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ' ') }}
