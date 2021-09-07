@@ -48,12 +48,11 @@ It is available on [cloudtogo4edge/kube-proxy](https://hub.docker.com/r/cloudtog
 
 | Tag | amd64 | arm64 | arm32v7 |
 | --- | --- | --- | --- |
-|[`v1.20.9-alpine3.13`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
-|[`v1.20.9-flannel-alpine3.13`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
-|[`v1.20.9-cni-alpine3.13`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
-|[`v1.20.9-kubeadm-alpine3.13`]()| `0MB / 0MB`|`0MB / 0MB`|` 0MB / 0MB`|
-|[`v1.20.9-kubeadm-cni-alpine3.13`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
-
+|[`v1.20.9-alpine3.13`]()| `24.10MB / 75.90MB`|`22.18MB / 70.67MB`|`21.83MB / 60.11MB`|
+|[`v1.20.9-flannel-alpine3.13`]()| `28.75MB / 80.64MB`|`26.41MB / 75.01MB`|`26.10MB / 64.48MB`|
+|[`v1.20.9-cni-alpine3.13`]()| `42.01MB / 94.18MB`|`38.44MB / 87.39MB`|`38.27MB / 76.96MB`|
+|[`v1.20.9-kubeadm-alpine3.13`]()| `41.69MB / 94.09MB`|`36.93MB / 86.07MB`|`35.85MB / 74.69MB`|
+|[`v1.20.9-kubeadm-cni-alpine3.13`]()| `59.59MB / 112.38MB`|`53.19MB / 102.78MB`|`52.29MB / 91.54MB`|
 #### Alpine 3.13 based kube-proxy image
 
 [`cloudtogo4edge/kube-proxy`](https://hub.docker.com/r/cloudtogo4edge/kube-proxy)
