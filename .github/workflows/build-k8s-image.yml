@@ -27,7 +27,7 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USER }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
     - name: build image
-      run: make `echo ${ISSUE_LABELS} | sed 's/release//g' | sed 's/v//g'`
+      run: make `echo ${ISSUE_LABELS} | sed 's/release//g' | sed -E 's/skip-\S+//g' | sed 's/v//g'`
     - name: start e2e test
       uses: actions/github-script@v4.0.2
       with:
