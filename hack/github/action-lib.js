@@ -140,7 +140,7 @@ const fetchLatestImageVersions = async (github) => {
             if (issue.labels.map(l => l.name).includes(ReleaseLabel)) {
                 if (issue.state == "open") {
                     console.log("Issue %d is still pending. Latest releases will be build after that.", issue.number);
-                    return
+                    return builtVersions;
                 }
 
                 // https://github.com/cloudtogo/containerized-kubelet/issues/13
