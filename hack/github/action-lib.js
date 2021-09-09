@@ -1,4 +1,6 @@
-const releaseLabel = "release";
+const ReleaseLabel = "release";
+const NumLTSReleases = 3;
+const ListPageSize = 30;
 
 const readFile = (f) => new Promise((resolve, reject) => {
   require('fs').readFile(f, {encoding: 'utf8'}, (err, data) => {
@@ -102,93 +104,132 @@ module.exports.commitRootFile = async (github, branch, file, comment) => {
     });
 }
 
-module.exports.checkUpstreamRelease = async (github) => {
-  const [releases, issues] = await Promise.all([
-    github.repos.listReleases({
-      owner: "kubernetes",
-      repo: "kubernetes",
-      per_page: 30,
-      page: 1,
-    }),
-    github.issues.listForRepo({
-      owner: "cloudtogo",
-      repo: "containerized-kubelet",
-      state: "all",
-      per_page: 30,
-      page: 1,
-    }),
-  ]);
-
-  var versionInNumber = (v) => {
+const parseVersionFromLabel = (v) => {
     // A version is in the manner of 'v1.xx.xx'.
     var versionDigits = '';
     for (const part of v.slice(1).split('.')) {
-      versionDigits += part.padEnd(3, '0');
+        versionDigits += part.padStart(3, '0');
     }
 
     return {
-      major: parseInt(versionDigits.slice(0, 6)),
-      minor: parseInt(versionDigits.slice(6)),
+        major: parseInt(versionDigits.slice(0, 6)),
+        minor: parseInt(versionDigits.slice(6)),
+        version: v,
     };
-  }
+}
 
-  var builtVersions = {};
+const fetchLatestImageVersions = async (github) => {
+    var builtVersions = {};
+    var pageID = 1;
 
-  for (const issue of issues.data) {
-    if (issue.labels.map(l => l.name).includes(releaseLabel)) {
-      if (issue.state == "open") {
-        console.log("Issue %d is still pending. Latest releases will be build after that.", issue.number);
-        return
-      }
-
-      // https://github.com/cloudtogo/containerized-kubelet/issues/13
-      if (issue.number != 13 && !issue.pull_request) {
-        console.log("Issue %d wasn't merged", issue.number);
-        continue;
-      }
-
-      if (issue.pull_request) {
-        try {
-          const merged = await github.pulls.checkIfMerged({
+    while (Object.keys(builtVersions).length < NumLTSReleases) {
+        const { data: issues} = await github.issues.listForRepo({
             owner: "cloudtogo",
             repo: "containerized-kubelet",
-            pull_number: issue.number,
-            });
-        } catch (error) {
-          console.log("Issue %d wasn't merged", issue.number);
-          continue;
+            state: "all",
+            per_page: ListPageSize,
+            page: pageID,
+        });
+
+        if (!issues || issues.length == 0) {
+            break;
         }
-      }
 
-      issue.labels.reduce((versions, l) => { if (l.name != releaseLabel) { const v = versionInNumber(l.name); versions[v.major] = v.minor; } return versions;}, builtVersions);
-      break;
+        for (const issue of issues) {
+            if (issue.labels.map(l => l.name).includes(ReleaseLabel)) {
+                if (issue.state == "open") {
+                    console.log("Issue %d is still pending. Latest releases will be build after that.", issue.number);
+                    return
+                }
+
+                // https://github.com/cloudtogo/containerized-kubelet/issues/13
+                if (issue.number != 13 && !issue.pull_request) {
+                    console.log("Issue %d wasn't merged", issue.number);
+                    continue;
+                }
+
+                if (issue.pull_request) {
+                    try {
+                        await github.pulls.checkIfMerged({
+                            owner: "cloudtogo",
+                            repo: "containerized-kubelet",
+                            pull_number: issue.number,
+                        });
+                    } catch (error) {
+                        console.log("Issue %d wasn't merged", issue.number);
+                        continue;
+                    }
+                }
+
+                issue.labels.reduce((versions, l) => {
+                    if (l.name == ReleaseLabel) {
+                        return versions;
+                    }
+                    const v = parseVersionFromLabel(l.name);
+                    if (!versions[v.major] || versions[v.major].minor < v.minor) {
+                        versions[v.major] = v;
+                    }
+
+                    return versions;
+                }, builtVersions);
+            }
+        }
+
+        pageID++;
     }
+
+    return builtVersions;
+}
+
+const fetchLatestReleases = async (github) => {
+    var releaseVersions = {};
+    var pageID = 1;
+
+    while (Object.keys(releaseVersions).length < NumLTSReleases) {
+        const { data: releases } = await github.repos.listReleases({
+            owner: "kubernetes",
+            repo: "kubernetes",
+            per_page: ListPageSize,
+            page: pageID,
+        });
+
+        if (!releases || releases.length == 0) {
+            break;
+        }
+
+        for (const rel of releases) {
+            if (!rel.prerelease && !rel.draft && rel.tag_name.match(/^v\d+\.\d+\.\d+$/)) {
+                const v = parseVersionFromLabel(rel.tag_name);
+                if (!releaseVersions[v.major] || releaseVersions[v.major].minor < v.minor) {
+                    releaseVersions[v.major] = v;
+                }
+            }
+        }
+    }
+
+    return releaseVersions;
+}
+
+module.exports.checkUpstreamRelease = async (github) => {
+  const [releases, imageVersions] = await Promise.all([
+      fetchLatestReleases(github),
+      fetchLatestImageVersions(github),
+  ]);
+
+  if (Object.keys(releases).length == 0) {
+    console.error("no release found from upstream");
+    throw new Error("no release found from upstream");
   }
 
-  if (Object.keys(builtVersions).length == 0) {
-    console.error("no label found in issues");
-    throw new Error("no label found in issues");
-  }
-
-  console.log("Issue labels ", builtVersions);
+  console.log("Upstream releases ", releases);
+  console.log("Image versions ", imageVersions);
 
   var newReleases = [];
-  for (const rel of releases.data) {
-    if (!rel.rel && rel.tag_name.match(/^v\d+\.\d+\.\d+$/)) {
-      const releaseInNumber = versionInNumber(rel.tag_name);
-      if (releaseInNumber.major in builtVersions) {
-        if (releaseInNumber.minor > builtVersions[releaseInNumber.major]) {
-          console.log("found release %s", rel.name);
-          newReleases.push(rel.tag_name);
-        }
-      } else {
-        const maxMajor = Object.keys(builtVersions).sort((a, b) => b-a)[0];
-        if (releaseInNumber.major > maxMajor) {
-          console.log("found new major release %s", rel.name);
-          newReleases.push(rel.tag_name);
-        }
+  const ltsReleases = Object.keys(releases).sort((a, b) => b-a).slice(0, NumLTSReleases);
+  for (const rel of ltsReleases) {
+      if (!imageVersions[rel] || imageVersions[rel].minor < releases[rel].minor) {
+          newReleases.push(releases[rel].version);
       }
-    }
   }
 
   console.log("New releases ", newReleases);
@@ -197,12 +238,12 @@ module.exports.checkUpstreamRelease = async (github) => {
     return
   }
 
-  newReleases.push(releaseLabel);
+  newReleases.push(ReleaseLabel);
   await github.issues.create({
     owner: "cloudtogo",
     repo: "containerized-kubelet",
     title: "Build images for upgrade upstream LTS",
-    labels: newReleases.map((rel) => rel),
+    labels: newReleases,
     body: "This issue is created by a periodically running robot, for building images of the latest kubernetes LTS.",
   });
 
@@ -210,7 +251,7 @@ module.exports.checkUpstreamRelease = async (github) => {
 }
 
 module.exports.readKubeVersionFromLabels = () => {
-  var kubeVersions = process.env.ISSUE_LABELS.split(" ").reduce((versions, l) => { if (l != releaseLabel) versions.push(l); return versions;}, []);
+  var kubeVersions = process.env.ISSUE_LABELS.split(" ").reduce((versions, l) => { if (l != ReleaseLabel) versions.push(l); return versions;}, []);
   kubeVersions.sort();
   kubeVersions.reverse();
   return kubeVersions;
