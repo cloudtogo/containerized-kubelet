@@ -31,6 +31,8 @@ jobs:
     - name: show system info
       run: |
         system_profiler SPHardwareDataType
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
     - name: e2e test
       run: |
         set -x
