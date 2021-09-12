@@ -40,7 +40,7 @@ jobs:
         vagrant -v
         vagrant plugin install vagrant-scp vagrant-vbguest
         mkdir -p /tmp/lan
-        curl -skL https://raw.githubusercontent.com/warm-metal/vagrant-lan/master/gateway/Vagrantfile -o /tmp/lan/Vagrantfile
+        curl -skL https://raw.githubusercontent.com/warm-metal/vagrant-lan/master/gateway/Vagrantfile | sed 's/10.38/10.41/g' > /tmp/lan/Vagrantfile
         pushd /tmp/lan
         vagrant up
         popd

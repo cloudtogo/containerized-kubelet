@@ -12,7 +12,7 @@ BASE_BOX = "alvistack/ubuntu-18.04"
 
 # DO NOT modify unless being necessary
 VM_LAN = "vboxnet0"
-VM_LAN_IP_PREFIX = "10.38."
+VM_LAN_IP_PREFIX = "10.41."
 # Currently only a 16bit mask is supported.
 VM_LAN_MASK = "255.255.0.0"
 VM_LAN_IP = "#{VM_LAN_IP_PREFIX}0.1"
@@ -123,7 +123,7 @@ Vagrant.configure("2") do |config|
 
         puts "got ip #{ip}, mac #{mac}"
 
-        master.vm.network :private_network, :name => VM_LAN, :adapter => 1, :ip => ip, :netmask => VM_LAN_MASK, :mac => mac, auto_config: false
+        master.vm.network :private_network, :name => VM_LAN, :adapter => 1, :mac => mac, type: "dhcp", auto_config: false
         master.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh", disabled: true
         master.ssh.port = 22
         master.ssh.host = ip
