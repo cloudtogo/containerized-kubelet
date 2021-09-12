@@ -138,18 +138,13 @@ const fetchLatestImageVersions = async (github) => {
 
         for (const issue of issues) {
             if (issue.labels.map(l => l.name).includes(ReleaseLabel)) {
-                if (issue.state == "open") {
-                    console.log("Issue %d is still pending. Latest releases will be build after that.", issue.number);
-                    return builtVersions;
-                }
-
                 // https://github.com/cloudtogo/containerized-kubelet/issues/13
                 if (issue.number != 13 && !issue.pull_request) {
                     console.log("Issue %d wasn't merged", issue.number);
                     continue;
                 }
 
-                if (issue.pull_request) {
+                if (issue.pull_request && issue.state != "open") {
                     try {
                         await github.pulls.checkIfMerged({
                             owner: "cloudtogo",
