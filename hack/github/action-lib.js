@@ -231,6 +231,7 @@ module.exports.checkUpstreamRelease = async (github) => {
   for (const rel of ltsReleases) {
       if (!imageVersions[rel]) {
           newReleases.push(releases[rel].version);
+          continue;
       }
 
       if (imageVersions[rel].minor < releases[rel].minor) {
