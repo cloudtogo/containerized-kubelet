@@ -1,5 +1,5 @@
 PLATFORM := linux/amd64,linux/arm64,linux/arm/v7
-ALPINE_VERSION := 3.13
+ALPINE_VERSION := 3.15
 
 .PHONY: 1.16.15
 1.16.15:

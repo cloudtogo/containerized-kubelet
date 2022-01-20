@@ -4,7 +4,7 @@ ARG ALPINE_VERSION
 ARG K8S_VERSIOIN
 FROM docker.io/cloudtogo4edge/kubernetes-source:v${K8S_VERSIOIN}-alpine${ALPINE_VERSION} as src
 
-FROM golang:1.16-alpine${ALPINE_VERSION} as builder-base
+FROM golang:1.17-alpine${ALPINE_VERSION} as builder-base
 RUN apk add --no-cache make build-base bash rsync linux-headers
 
 FROM builder-base as crictl
