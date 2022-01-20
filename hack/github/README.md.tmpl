@@ -10,10 +10,10 @@ Users can pull images that just match their requirements.
 It also compresses non-daemon binaries via upx, such as cni-plugins, crictl, and kubeadm,
 those binaries will be only extracted in executing. 
 
-All images are based on alpine:3.13 with CGO enabled. 
+All images are based on alpine:3.15 with CGO enabled.
 They are available on [cloudtogo4edge/kubelet](https://hub.docker.com/r/cloudtogo4edge/kubelet).
 
-We also provide a multi-arch kube-proxy image based on alpine3.13. Its size is less than half of the size of the official one.
+We also provide a multi-arch kube-proxy image based on alpine3.15. Its size is less than half of the size of the official one.
 It is available on [cloudtogo4edge/kube-proxy](https://hub.docker.com/r/cloudtogo4edge/kube-proxy).
 
 - [Tags](#tags)
@@ -34,11 +34,11 @@ It is available on [cloudtogo4edge/kube-proxy](https://hub.docker.com/r/cloudtog
 ## Tags
 
 ### Tag style
-* `v1.xx.yy-alpine3.13` : kubelet and its dependent system commands. (smallest)
-* `v1.xx.yy-flannel-alpine3.13`: kubelet and CNI plugins required by flannel.
-* `v1.xx.yy-cni-alpine3.13` : kubelet and CNI plugins.
-* `v1.xx.yy-kubeadm-alpine3.13` : kubelet and kubeadm, without CNI plugins.
-* `v1.xx.yy-kubeadm-cni-alpine3.13` : kubelet, kubeadm, and CNI plugins. (largest)
+* `v1.xx.yy-alpine3.15` : kubelet and its dependent system commands. (smallest)
+* `v1.xx.yy-flannel-alpine3.15`: kubelet and CNI plugins required by flannel.
+* `v1.xx.yy-cni-alpine3.15` : kubelet and CNI plugins.
+* `v1.xx.yy-kubeadm-alpine3.15` : kubelet and kubeadm, without CNI plugins.
+* `v1.xx.yy-kubeadm-cni-alpine3.15` : kubelet, kubeadm, and CNI plugins. (largest)
 
 ### `Compressed / Extracted` Size Matrix
 
@@ -73,7 +73,7 @@ docker run --rm --network=host --pid=host --uts=host \
   -v /etc/kubernetes:/etc/kubernetes \
   -v /var/lib/kubelet:/var/lib/kubelet \
   --entrypoint kubeadm \
-  cloudtogo4edge/kubelet:v1.20.7-kubeadm-alpine3.13 \
+  cloudtogo4edge/kubelet:v1.23.2-kubeadm-alpine3.15 \
   join control-plane.minikube.internal:8443 --token putlik.1dgfo3518jdyix3a     --discovery-token-ca-cert-hash sha256:33c6538ef24069827dbcac46e7b43079d2c4d471dc040fc330425bdd25c591c3
 ```
 
@@ -94,7 +94,7 @@ ctr -n k8s.io run -t --privileged --net-host --runtime=io.containerd.runtime.v1.
   --mount type=bind,src=/var/lib/kubelet,dst=/var/lib/kubelet,options=rbind:rw \
   --mount type=bind,src=/etc/kubernetes,dst=/etc/kubernetes,options=rbind:rw \
   --rootfs-propagation=rshared \
-  docker.io/cloudtogo4edge/kubelet:v1.20.7-kubeadm-alpine3.13 kubeadm0 \
+  docker.io/cloudtogo4edge/kubelet:v1.23.2-kubeadm-alpine3.15 kubeadm0 \
   kubeadm join control-plane.minikube.internal:8443 --token putlik.1dgfo3518jdyix3a     --discovery-token-ca-cert-hash sha256:33c6538ef24069827dbcac46e7b43079d2c4d471dc040fc330425bdd25c591c3
 ```
 
@@ -149,7 +149,7 @@ docker run -d --restart=always --name=kubeletd --network=host --pid=host --uts=h
     --mount type=bind,src=/var/lib/kubelet,dst=/var/lib/kubelet,bind-propagation=rshared \
     -v /var/log/pods:/var/log/pods \
     -v /etc/kubernetes:/etc/kubernetes -v /etc/cni/net.d:/etc/cni/net.d \
-    cloudtogo4edge/kubelet:v1.20.7-cni-alpine3.13
+    cloudtogo4edge/kubelet:v1.23.2-cni-alpine3.15
 ```
 
 #### Containerd
@@ -178,7 +178,7 @@ ctr -n k8s.io run -d --privileged --net-host --runtime=io.containerd.runtime.v1.
   --mount type=bind,src=/var/log/pods,dst=/var/log/pods,options=rbind:rw \
   --mount type=bind,src=/etc/kubernetes,dst=/etc/kubernetes,options=rbind:rw --mount type=bind,src=/etc/cni/net.d,dst=/etc/cni/net.d,options=rbind:ro \
   --rootfs-propagation=rshared \
-  docker.io/cloudtogo4edge/kubelet:v1.20.7-cni-alpine3.13 kubeletd \
+  docker.io/cloudtogo4edge/kubelet:v1.23.2-cni-alpine3.15 kubeletd \
   kubelet --config=/var/lib/kubelet/config.yaml --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf \
   --register-node --network-plugin=cni --container-runtime=remote --container-runtime-endpoint=unix:///run/containerd/containerd.sock
 ```
