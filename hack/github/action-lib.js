@@ -315,11 +315,11 @@ module.exports.createPRForNewReleases = async (github) => {
 
 | Tag | amd64 | arm64 | arm32v7 |
 | --- | --- | --- | --- |
-|[\`${imageData.version}-alpine3.13\`]()| \`${imageData.size.kubelet.amd64Com}MB / ${imageData.size.kubelet.amd64Ex}MB\`|\`${imageData.size.kubelet.arm64Com}MB / ${imageData.size.kubelet.arm64Ex}MB\`|\`${imageData.size.kubelet.amr32v7Com}MB / ${imageData.size.kubelet.amr32v7Ex}MB\`|
-|[\`${imageData.version}-flannel-alpine3.13\`]()| \`${imageData.size.flannel.amd64Com}MB / ${imageData.size.flannel.amd64Ex}MB\`|\`${imageData.size.flannel.arm64Com}MB / ${imageData.size.flannel.arm64Ex}MB\`|\`${imageData.size.flannel.amr32v7Com}MB / ${imageData.size.flannel.amr32v7Ex}MB\`|
-|[\`${imageData.version}-cni-alpine3.13\`]()| \`${imageData.size.cni.amd64Com}MB / ${imageData.size.cni.amd64Ex}MB\`|\`${imageData.size.cni.arm64Com}MB / ${imageData.size.cni.arm64Ex}MB\`|\`${imageData.size.cni.amr32v7Com}MB / ${imageData.size.cni.amr32v7Ex}MB\`|
-|[\`${imageData.version}-kubeadm-alpine3.13\`]()| \`${imageData.size.kubeadm.amd64Com}MB / ${imageData.size.kubeadm.amd64Ex}MB\`|\`${imageData.size.kubeadm.arm64Com}MB / ${imageData.size.kubeadm.arm64Ex}MB\`|\` ${imageData.size.kubeadm.amr32v7Com}MB / ${imageData.size.kubeadm.amr32v7Ex}MB\`|
-|[\`${imageData.version}-kubeadm-cni-alpine3.13\`]()| \`${imageData.size.kubeadmCNI.amd64Com}MB / ${imageData.size.kubeadmCNI.amd64Ex}MB\`|\`${imageData.size.kubeadmCNI.arm64Com}MB / ${imageData.size.kubeadmCNI.arm64Ex}MB\`|\`${imageData.size.kubeadmCNI.amr32v7Com}MB / ${imageData.size.kubeadmCNI.amr32v7Ex}MB\`|
+|[\`${imageData.version}-alpine3.15\`]()| \`${imageData.size.kubelet.amd64Com}MB / ${imageData.size.kubelet.amd64Ex}MB\`|\`${imageData.size.kubelet.arm64Com}MB / ${imageData.size.kubelet.arm64Ex}MB\`|\`${imageData.size.kubelet.amr32v7Com}MB / ${imageData.size.kubelet.amr32v7Ex}MB\`|
+|[\`${imageData.version}-flannel-alpine3.15\`]()| \`${imageData.size.flannel.amd64Com}MB / ${imageData.size.flannel.amd64Ex}MB\`|\`${imageData.size.flannel.arm64Com}MB / ${imageData.size.flannel.arm64Ex}MB\`|\`${imageData.size.flannel.amr32v7Com}MB / ${imageData.size.flannel.amr32v7Ex}MB\`|
+|[\`${imageData.version}-cni-alpine3.15\`]()| \`${imageData.size.cni.amd64Com}MB / ${imageData.size.cni.amd64Ex}MB\`|\`${imageData.size.cni.arm64Com}MB / ${imageData.size.cni.arm64Ex}MB\`|\`${imageData.size.cni.amr32v7Com}MB / ${imageData.size.cni.amr32v7Ex}MB\`|
+|[\`${imageData.version}-kubeadm-alpine3.15\`]()| \`${imageData.size.kubeadm.amd64Com}MB / ${imageData.size.kubeadm.amd64Ex}MB\`|\`${imageData.size.kubeadm.arm64Com}MB / ${imageData.size.kubeadm.arm64Ex}MB\`|\` ${imageData.size.kubeadm.amr32v7Com}MB / ${imageData.size.kubeadm.amr32v7Ex}MB\`|
+|[\`${imageData.version}-kubeadm-cni-alpine3.15\`]()| \`${imageData.size.kubeadmCNI.amd64Com}MB / ${imageData.size.kubeadmCNI.amd64Ex}MB\`|\`${imageData.size.kubeadmCNI.arm64Com}MB / ${imageData.size.kubeadmCNI.arm64Ex}MB\`|\`${imageData.size.kubeadmCNI.amr32v7Com}MB / ${imageData.size.kubeadmCNI.amr32v7Ex}MB\`|
 `;
       
       readmeSegments.push(kubeletReadMeTmpl);
@@ -329,7 +329,7 @@ module.exports.createPRForNewReleases = async (github) => {
 
 [\`cloudtogo4edge/kube-proxy\`](https://hub.docker.com/r/cloudtogo4edge/kube-proxy)
 
-${kubeVersions.map(v => `* [\`${v}-alpine3.13\`]()`).join("\n")}`;
+${kubeVersions.map(v => `* [\`${v}-alpine3.15\`]()`).join("\n")}`;
 
     readmeSegments.push(kubeproxyReadMeTmpl);
 
@@ -426,11 +426,11 @@ module.exports.updateImageSizeInPR = async (github) => {
   }
 
   const imageCategory = [
-      "alpine3.13",
-      "flannel-alpine3.13",
-      "cni-alpine3.13",
-      "kubeadm-alpine3.13",
-      "kubeadm-cni-alpine3.13"
+      "alpine3.15",
+      "flannel-alpine3.15",
+      "cni-alpine3.15",
+      "kubeadm-alpine3.15",
+      "kubeadm-cni-alpine3.15"
   ];
 
   var readmeSegments = [];
@@ -456,7 +456,7 @@ module.exports.updateImageSizeInPR = async (github) => {
 
 [\`cloudtogo4edge/kube-proxy\`](https://hub.docker.com/r/cloudtogo4edge/kube-proxy)
 
-${kubeVersions.map(v => `* [\`${v}-alpine3.13\`]()`).join("\n")}`;
+${kubeVersions.map(v => `* [\`${v}-alpine3.15\`]()`).join("\n")}`;
 
   readmeSegments.push(kubeproxyReadMeTmpl);
 
