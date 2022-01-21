@@ -4,7 +4,7 @@ set -e
 
 [ ${K8S_VERSION} == "" ] && echo "K8S_VERSION not defined" && exit 1
 
-IMAGE=${IMAGE:-cloudtogo4edge/kubelet:${K8S_VERSION}-kubeadm-cni-alpine3.13}
+IMAGE=${IMAGE:-cloudtogo4edge/kubelet:${K8S_VERSION}-kubeadm-cni-alpine3.15}
 
 docker pull ${IMAGE}
 
