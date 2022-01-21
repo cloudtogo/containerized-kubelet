@@ -10,10 +10,10 @@ Users can pull images that just match their requirements.
 It also compresses non-daemon binaries via upx, such as cni-plugins, crictl, and kubeadm,
 those binaries will be only extracted in executing. 
 
-All images are based on alpine:3.13 with CGO enabled. 
+All images are based on alpine:3.15 with CGO enabled.
 They are available on [cloudtogo4edge/kubelet](https://hub.docker.com/r/cloudtogo4edge/kubelet).
 
-We also provide a multi-arch kube-proxy image based on alpine3.13. Its size is less than half of the size of the official one.
+We also provide a multi-arch kube-proxy image based on alpine3.15. Its size is less than half of the size of the official one.
 It is available on [cloudtogo4edge/kube-proxy](https://hub.docker.com/r/cloudtogo4edge/kube-proxy).
 
 - [Tags](#tags)
@@ -34,54 +34,57 @@ It is available on [cloudtogo4edge/kube-proxy](https://hub.docker.com/r/cloudtog
 ## Tags
 
 ### Tag style
-* `v1.xx.yy-alpine3.13` : kubelet and its dependent system commands. (smallest)
-* `v1.xx.yy-flannel-alpine3.13`: kubelet and CNI plugins required by flannel.
-* `v1.xx.yy-cni-alpine3.13` : kubelet and CNI plugins.
-* `v1.xx.yy-kubeadm-alpine3.13` : kubelet and kubeadm, without CNI plugins.
-* `v1.xx.yy-kubeadm-cni-alpine3.13` : kubelet, kubeadm, and CNI plugins. (largest)
+* `v1.xx.yy-alpine3.15` : kubelet and its dependent system commands. (smallest)
+* `v1.xx.yy-flannel-alpine3.15`: kubelet and CNI plugins required by flannel.
+* `v1.xx.yy-cni-alpine3.15` : kubelet and CNI plugins.
+* `v1.xx.yy-kubeadm-alpine3.15` : kubelet and kubeadm, without CNI plugins.
+* `v1.xx.yy-kubeadm-cni-alpine3.15` : kubelet, kubeadm, and CNI plugins. (largest)
 
 ### `Compressed / Extracted` Size Matrix
 
-#### v1.22.4
+#### v1.23.2
 
-[`cloudtogo4edge/kubelet v1.22.4`](https://hub.docker.com/r/cloudtogo4edge/kubelet/tags?page=1&ordering=last_updated&name=v1.22.4)
-
-| Tag | amd64 | arm64 | arm32v7 |
-| --- | --- | --- | --- |
-|[`v1.22.4-alpine3.13`]()| `24.55MB / 78.21MB`|`22.55MB / 72.64MB`|`22.19MB / 62.31MB`|
-|[`v1.22.4-flannel-alpine3.13`]()| `29.19MB / 82.95MB`|`26.77MB / 76.98MB`|`26.46MB / 66.69MB`|
-|[`v1.22.4-cni-alpine3.13`]()| `42.45MB / 96.50MB`|`38.81MB / 89.36MB`|`38.63MB / 79.16MB`|
-|[`v1.22.4-kubeadm-alpine3.13`]()| `43.92MB / 98.25MB`|`38.84MB / 89.65MB`|`37.59MB / 78.33MB`|
-|[`v1.22.4-kubeadm-cni-alpine3.13`]()| `61.82MB / 116.54MB`|`55.11MB / 106.37MB`|`54.03MB / 95.18MB`|
-#### v1.21.7
-
-[`cloudtogo4edge/kubelet v1.21.7`](https://hub.docker.com/r/cloudtogo4edge/kubelet/tags?page=1&ordering=last_updated&name=v1.21.7)
+[`cloudtogo4edge/kubelet v1.23.2`](https://hub.docker.com/r/cloudtogo4edge/kubelet/tags?page=1&ordering=last_updated&name=v1.23.2)
 
 | Tag | amd64 | arm64 | arm32v7 |
 | --- | --- | --- | --- |
-|[`v1.21.7-alpine3.13`]()| `24.27MB / 76.71MB`|`22.31MB / 71.23MB`|`21.93MB / 61.05MB`|
-|[`v1.21.7-flannel-alpine3.13`]()| `28.91MB / 81.45MB`|`26.53MB / 75.57MB`|`26.20MB / 65.43MB`|
-|[`v1.21.7-cni-alpine3.13`]()| `42.17MB / 94.99MB`|`38.57MB / 87.95MB`|`38.37MB / 77.91MB`|
-|[`v1.21.7-kubeadm-alpine3.13`]()| `43.38MB / 96.48MB`|`38.39MB / 88.02MB`|`37.15MB / 76.89MB`|
-|[`v1.21.7-kubeadm-cni-alpine3.13`]()| `61.28MB / 114.77MB`|`54.66MB / 104.74MB`|`53.59MB / 93.74MB`|
-#### v1.20.13
+|[`v1.23.2-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.23.2-flannel-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.23.2-cni-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.23.2-kubeadm-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|` 0MB / 0MB`|
+|[`v1.23.2-kubeadm-cni-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
 
-[`cloudtogo4edge/kubelet v1.20.13`](https://hub.docker.com/r/cloudtogo4edge/kubelet/tags?page=1&ordering=last_updated&name=v1.20.13)
+#### v1.22.6
+
+[`cloudtogo4edge/kubelet v1.22.6`](https://hub.docker.com/r/cloudtogo4edge/kubelet/tags?page=1&ordering=last_updated&name=v1.22.6)
 
 | Tag | amd64 | arm64 | arm32v7 |
 | --- | --- | --- | --- |
-|[`v1.20.13-alpine3.13`]()| `24.12MB / 75.92MB`|`22.20MB / 70.69MB`|`21.85MB / 60.13MB`|
-|[`v1.20.13-flannel-alpine3.13`]()| `28.76MB / 80.66MB`|`26.42MB / 75.03MB`|`26.12MB / 64.50MB`|
-|[`v1.20.13-cni-alpine3.13`]()| `42.03MB / 94.20MB`|`38.46MB / 87.41MB`|`38.29MB / 76.98MB`|
-|[`v1.20.13-kubeadm-alpine3.13`]()| `41.73MB / 94.14MB`|`36.97MB / 86.11MB`|`35.89MB / 74.73MB`|
-|[`v1.20.13-kubeadm-cni-alpine3.13`]()| `59.63MB / 112.42MB`|`53.23MB / 102.83MB`|`52.33MB / 91.58MB`|
+|[`v1.22.6-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.22.6-flannel-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.22.6-cni-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.22.6-kubeadm-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|` 0MB / 0MB`|
+|[`v1.22.6-kubeadm-cni-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+
+#### v1.21.9
+
+[`cloudtogo4edge/kubelet v1.21.9`](https://hub.docker.com/r/cloudtogo4edge/kubelet/tags?page=1&ordering=last_updated&name=v1.21.9)
+
+| Tag | amd64 | arm64 | arm32v7 |
+| --- | --- | --- | --- |
+|[`v1.21.9-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.21.9-flannel-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.21.9-cni-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.21.9-kubeadm-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|` 0MB / 0MB`|
+|[`v1.21.9-kubeadm-cni-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+
 #### Alpine 3.13 based kube-proxy image
 
 [`cloudtogo4edge/kube-proxy`](https://hub.docker.com/r/cloudtogo4edge/kube-proxy)
 
-* [`v1.22.4-alpine3.13`]()
-* [`v1.21.7-alpine3.13`]()
-* [`v1.20.13-alpine3.13`]()
+* [`v1.23.2-alpine3.15`]()
+* [`v1.22.6-alpine3.15`]()
+* [`v1.21.9-alpine3.15`]()
 
 ## Usage
 
@@ -112,7 +115,7 @@ docker run --rm --network=host --pid=host --uts=host \
   -v /etc/kubernetes:/etc/kubernetes \
   -v /var/lib/kubelet:/var/lib/kubelet \
   --entrypoint kubeadm \
-  cloudtogo4edge/kubelet:v1.20.7-kubeadm-alpine3.13 \
+  cloudtogo4edge/kubelet:v1.23.2-kubeadm-alpine3.15 \
   join control-plane.minikube.internal:8443 --token putlik.1dgfo3518jdyix3a     --discovery-token-ca-cert-hash sha256:33c6538ef24069827dbcac46e7b43079d2c4d471dc040fc330425bdd25c591c3
 ```
 
@@ -133,7 +136,7 @@ ctr -n k8s.io run -t --privileged --net-host --runtime=io.containerd.runtime.v1.
   --mount type=bind,src=/var/lib/kubelet,dst=/var/lib/kubelet,options=rbind:rw \
   --mount type=bind,src=/etc/kubernetes,dst=/etc/kubernetes,options=rbind:rw \
   --rootfs-propagation=rshared \
-  docker.io/cloudtogo4edge/kubelet:v1.20.7-kubeadm-alpine3.13 kubeadm0 \
+  docker.io/cloudtogo4edge/kubelet:v1.23.2-kubeadm-alpine3.15 kubeadm0 \
   kubeadm join control-plane.minikube.internal:8443 --token putlik.1dgfo3518jdyix3a     --discovery-token-ca-cert-hash sha256:33c6538ef24069827dbcac46e7b43079d2c4d471dc040fc330425bdd25c591c3
 ```
 
@@ -188,7 +191,7 @@ docker run -d --restart=always --name=kubeletd --network=host --pid=host --uts=h
     --mount type=bind,src=/var/lib/kubelet,dst=/var/lib/kubelet,bind-propagation=rshared \
     -v /var/log/pods:/var/log/pods \
     -v /etc/kubernetes:/etc/kubernetes -v /etc/cni/net.d:/etc/cni/net.d \
-    cloudtogo4edge/kubelet:v1.20.7-cni-alpine3.13
+    cloudtogo4edge/kubelet:v1.23.2-cni-alpine3.15
 ```
 
 #### Containerd
@@ -217,7 +220,7 @@ ctr -n k8s.io run -d --privileged --net-host --runtime=io.containerd.runtime.v1.
   --mount type=bind,src=/var/log/pods,dst=/var/log/pods,options=rbind:rw \
   --mount type=bind,src=/etc/kubernetes,dst=/etc/kubernetes,options=rbind:rw --mount type=bind,src=/etc/cni/net.d,dst=/etc/cni/net.d,options=rbind:ro \
   --rootfs-propagation=rshared \
-  docker.io/cloudtogo4edge/kubelet:v1.20.7-cni-alpine3.13 kubeletd \
+  docker.io/cloudtogo4edge/kubelet:v1.23.2-cni-alpine3.15 kubeletd \
   kubelet --config=/var/lib/kubelet/config.yaml --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf \
   --register-node --network-plugin=cni --container-runtime=remote --container-runtime-endpoint=unix:///run/containerd/containerd.sock
 ```
