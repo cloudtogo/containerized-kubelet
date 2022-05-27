@@ -42,17 +42,17 @@ It is available on [cloudtogo4edge/kube-proxy](https://hub.docker.com/r/cloudtog
 
 ### `Compressed / Extracted` Size Matrix
 
-#### v1.24.0
+#### v1.24.1
 
-[`cloudtogo4edge/kubelet v1.24.0`](https://hub.docker.com/r/cloudtogo4edge/kubelet/tags?page=1&ordering=last_updated&name=v1.24.0)
+[`cloudtogo4edge/kubelet v1.24.1`](https://hub.docker.com/r/cloudtogo4edge/kubelet/tags?page=1&ordering=last_updated&name=v1.24.1)
 
 | Tag | amd64 | arm64 | arm32v7 |
 | --- | --- | --- | --- |
-|[`v1.24.0-alpine3.15`]()| `24.75MB / 75.46MB`|`23.28MB / 73.35MB`|`22.79MB / 66.54MB`|
-|[`v1.24.0-flannel-alpine3.15`]()| `29.27MB / 80.07MB`|`27.42MB / 77.60MB`|`27.04MB / 70.90MB`|
-|[`v1.24.0-cni-alpine3.15`]()| `42.38MB / 93.47MB`|`39.45MB / 89.95MB`|`39.29MB / 83.47MB`|
-|[`v1.24.0-kubeadm-alpine3.15`]()| `42.94MB / 94.24MB`|`38.89MB / 89.58MB`|`37.67MB / 81.99MB`|
-|[`v1.24.0-kubeadm-cni-alpine3.15`]()| `60.57MB / 112.24MB`|`55.06MB / 106.17MB`|`54.17MB / 98.92MB`|
+|[`v1.24.1-alpine3.15`]()| `24.75MB / 75.46MB`|`23.28MB / 73.35MB`|`22.79MB / 66.54MB`|
+|[`v1.24.1-flannel-alpine3.15`]()| `29.27MB / 80.07MB`|`27.43MB / 77.60MB`|`27.04MB / 70.90MB`|
+|[`v1.24.1-cni-alpine3.15`]()| `42.39MB / 93.47MB`|`39.45MB / 89.95MB`|`39.29MB / 83.47MB`|
+|[`v1.24.1-kubeadm-alpine3.15`]()| `42.94MB / 94.24MB`|`38.89MB / 89.58MB`|`37.67MB / 82.00MB`|
+|[`v1.24.1-kubeadm-cni-alpine3.15`]()| `60.57MB / 112.24MB`|`55.06MB / 106.17MB`|`54.17MB / 98.92MB`|
 #### v1.23.7
 
 [`cloudtogo4edge/kubelet v1.23.7`](https://hub.docker.com/r/cloudtogo4edge/kubelet/tags?page=1&ordering=last_updated&name=v1.23.7)
@@ -79,7 +79,7 @@ It is available on [cloudtogo4edge/kube-proxy](https://hub.docker.com/r/cloudtog
 
 [`cloudtogo4edge/kube-proxy`](https://hub.docker.com/r/cloudtogo4edge/kube-proxy)
 
-* [`v1.24.0-alpine3.15`]()
+* [`v1.24.1-alpine3.15`]()
 * [`v1.23.7-alpine3.15`]()
 * [`v1.22.10-alpine3.15`]()
 
