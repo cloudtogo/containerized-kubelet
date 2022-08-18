@@ -42,46 +42,49 @@ It is available on [cloudtogo4edge/kube-proxy](https://hub.docker.com/r/cloudtog
 
 ### `Compressed / Extracted` Size Matrix
 
-#### v1.24.3
+#### v1.24.4
 
-[`cloudtogo4edge/kubelet v1.24.3`](https://hub.docker.com/r/cloudtogo4edge/kubelet/tags?page=1&ordering=last_updated&name=v1.24.3)
-
-| Tag | amd64 | arm64 | arm32v7 |
-| --- | --- | --- | --- |
-|[`v1.24.3-alpine3.15`]()| `24.76MB / 75.47MB`|`23.29MB / 73.36MB`|`22.79MB / 66.55MB`|
-|[`v1.24.3-flannel-alpine3.15`]()| `29.28MB / 80.08MB`|`27.43MB / 77.61MB`|`27.04MB / 70.91MB`|
-|[`v1.24.3-cni-alpine3.15`]()| `42.39MB / 93.48MB`|`39.46MB / 89.96MB`|`39.29MB / 83.48MB`|
-|[`v1.24.3-kubeadm-alpine3.15`]()| `42.94MB / 94.25MB`|`38.89MB / 89.59MB`|`37.67MB / 82.01MB`|
-|[`v1.24.3-kubeadm-cni-alpine3.15`]()| `60.58MB / 112.25MB`|`55.06MB / 106.19MB`|`54.17MB / 98.94MB`|
-#### v1.23.9
-
-[`cloudtogo4edge/kubelet v1.23.9`](https://hub.docker.com/r/cloudtogo4edge/kubelet/tags?page=1&ordering=last_updated&name=v1.23.9)
+[`cloudtogo4edge/kubelet v1.24.4`](https://hub.docker.com/r/cloudtogo4edge/kubelet/tags?page=1&ordering=last_updated&name=v1.24.4)
 
 | Tag | amd64 | arm64 | arm32v7 |
 | --- | --- | --- | --- |
-|[`v1.23.9-alpine3.15`]()| `25.47MB / 77.82MB`|`23.94MB / 75.58MB`|`23.47MB / 68.71MB`|
-|[`v1.23.9-flannel-alpine3.15`]()| `29.99MB / 82.43MB`|`28.08MB / 79.82MB`|`27.72MB / 73.07MB`|
-|[`v1.23.9-cni-alpine3.15`]()| `43.10MB / 95.82MB`|`40.11MB / 92.17MB`|`39.97MB / 85.64MB`|
-|[`v1.23.9-kubeadm-alpine3.15`]()| `44.77MB / 97.77MB`|`40.45MB / 92.78MB`|`39.13MB / 85.02MB`|
-|[`v1.23.9-kubeadm-cni-alpine3.15`]()| `62.41MB / 115.78MB`|`56.62MB / 109.37MB`|`55.64MB / 101.95MB`|
-#### v1.22.12
+|[`v1.24.4-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.24.4-flannel-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.24.4-cni-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.24.4-kubeadm-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|` 0MB / 0MB`|
+|[`v1.24.4-kubeadm-cni-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
 
-[`cloudtogo4edge/kubelet v1.22.12`](https://hub.docker.com/r/cloudtogo4edge/kubelet/tags?page=1&ordering=last_updated&name=v1.22.12)
+#### v1.23.10
+
+[`cloudtogo4edge/kubelet v1.23.10`](https://hub.docker.com/r/cloudtogo4edge/kubelet/tags?page=1&ordering=last_updated&name=v1.23.10)
 
 | Tag | amd64 | arm64 | arm32v7 |
 | --- | --- | --- | --- |
-|[`v1.22.12-alpine3.15`]()| `24.73MB / 74.71MB`|`23.32MB / 72.51MB`|`22.75MB / 65.52MB`|
-|[`v1.22.12-flannel-alpine3.15`]()| `29.24MB / 79.32MB`|`27.46MB / 76.76MB`|`27.00MB / 69.88MB`|
-|[`v1.22.12-cni-alpine3.15`]()| `42.36MB / 92.71MB`|`39.48MB / 89.11MB`|`39.25MB / 82.45MB`|
-|[`v1.22.12-kubeadm-alpine3.15`]()| `43.79MB / 94.42MB`|`39.63MB / 89.50MB`|`38.25MB / 81.66MB`|
-|[`v1.22.12-kubeadm-cni-alpine3.15`]()| `61.43MB / 112.43MB`|`55.80MB / 106.10MB`|`54.75MB / 98.59MB`|
+|[`v1.23.10-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.23.10-flannel-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.23.10-cni-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.23.10-kubeadm-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|` 0MB / 0MB`|
+|[`v1.23.10-kubeadm-cni-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+
+#### v1.22.13
+
+[`cloudtogo4edge/kubelet v1.22.13`](https://hub.docker.com/r/cloudtogo4edge/kubelet/tags?page=1&ordering=last_updated&name=v1.22.13)
+
+| Tag | amd64 | arm64 | arm32v7 |
+| --- | --- | --- | --- |
+|[`v1.22.13-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.22.13-flannel-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.22.13-cni-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.22.13-kubeadm-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|` 0MB / 0MB`|
+|[`v1.22.13-kubeadm-cni-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+
 #### Alpine 3.13 based kube-proxy image
 
 [`cloudtogo4edge/kube-proxy`](https://hub.docker.com/r/cloudtogo4edge/kube-proxy)
 
-* [`v1.24.3-alpine3.15`]()
-* [`v1.23.9-alpine3.15`]()
-* [`v1.22.12-alpine3.15`]()
+* [`v1.24.4-alpine3.15`]()
+* [`v1.23.10-alpine3.15`]()
+* [`v1.22.13-alpine3.15`]()
 
 ## Usage
 
