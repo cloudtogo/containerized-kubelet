@@ -48,40 +48,43 @@ It is available on [cloudtogo4edge/kube-proxy](https://hub.docker.com/r/cloudtog
 
 | Tag | amd64 | arm64 | arm32v7 |
 | --- | --- | --- | --- |
-|[`v1.25.0-alpine3.15`]()| `25.07MB / 74.91MB`|`23.53MB / 72.40MB`|`23.08MB / 65.86MB`|
-|[`v1.25.0-flannel-alpine3.15`]()| `29.70MB / 79.64MB`|`27.80MB / 76.78MB`|`27.45MB / 70.34MB`|
-|[`v1.25.0-cni-alpine3.15`]()| `43.13MB / 93.35MB`|`40.14MB / 89.44MB`|`40.01MB / 83.23MB`|
-|[`v1.25.0-kubeadm-alpine3.15`]()| `46.11MB / 96.66MB`|`41.52MB / 91.14MB`|`40.13MB / 83.61MB`|
-|[`v1.25.0-kubeadm-cni-alpine3.15`]()| `64.17MB / 115.10MB`|`58.12MB / 108.19MB`|`57.06MB / 100.97MB`|
-#### v1.24.4
+|[`v1.25.0-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.25.0-flannel-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.25.0-cni-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.25.0-kubeadm-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|` 0MB / 0MB`|
+|[`v1.25.0-kubeadm-cni-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
 
-[`cloudtogo4edge/kubelet v1.24.4`](https://hub.docker.com/r/cloudtogo4edge/kubelet/tags?page=1&ordering=last_updated&name=v1.24.4)
+#### v1.24.5
 
-| Tag | amd64 | arm64 | arm32v7 |
-| --- | --- | --- | --- |
-|[`v1.24.4-alpine3.15`]()| `24.76MB / 75.49MB`|`23.29MB / 73.37MB`|`22.80MB / 66.56MB`|
-|[`v1.24.4-flannel-alpine3.15`]()| `29.28MB / 80.10MB`|`27.43MB / 77.62MB`|`27.05MB / 70.92MB`|
-|[`v1.24.4-cni-alpine3.15`]()| `42.40MB / 93.49MB`|`39.46MB / 89.97MB`|`39.30MB / 83.49MB`|
-|[`v1.24.4-kubeadm-alpine3.15`]()| `42.95MB / 94.26MB`|`38.89MB / 89.60MB`|`37.68MB / 82.02MB`|
-|[`v1.24.4-kubeadm-cni-alpine3.15`]()| `60.58MB / 112.27MB`|`55.06MB / 106.20MB`|`54.18MB / 98.95MB`|
-#### v1.23.10
-
-[`cloudtogo4edge/kubelet v1.23.10`](https://hub.docker.com/r/cloudtogo4edge/kubelet/tags?page=1&ordering=last_updated&name=v1.23.10)
+[`cloudtogo4edge/kubelet v1.24.5`](https://hub.docker.com/r/cloudtogo4edge/kubelet/tags?page=1&ordering=last_updated&name=v1.24.5)
 
 | Tag | amd64 | arm64 | arm32v7 |
 | --- | --- | --- | --- |
-|[`v1.23.10-alpine3.15`]()| `25.47MB / 77.82MB`|`23.94MB / 75.58MB`|`23.47MB / 68.71MB`|
-|[`v1.23.10-flannel-alpine3.15`]()| `29.99MB / 82.43MB`|`28.08MB / 79.82MB`|`27.72MB / 73.07MB`|
-|[`v1.23.10-cni-alpine3.15`]()| `43.11MB / 95.83MB`|`40.11MB / 92.17MB`|`39.97MB / 85.64MB`|
-|[`v1.23.10-kubeadm-alpine3.15`]()| `44.77MB / 97.78MB`|`40.45MB / 92.78MB`|`39.13MB / 85.02MB`|
-|[`v1.23.10-kubeadm-cni-alpine3.15`]()| `62.41MB / 115.78MB`|`56.62MB / 109.37MB`|`55.64MB / 101.95MB`|
+|[`v1.24.5-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.24.5-flannel-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.24.5-cni-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.24.5-kubeadm-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|` 0MB / 0MB`|
+|[`v1.24.5-kubeadm-cni-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+
+#### v1.23.11
+
+[`cloudtogo4edge/kubelet v1.23.11`](https://hub.docker.com/r/cloudtogo4edge/kubelet/tags?page=1&ordering=last_updated&name=v1.23.11)
+
+| Tag | amd64 | arm64 | arm32v7 |
+| --- | --- | --- | --- |
+|[`v1.23.11-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.23.11-flannel-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.23.11-cni-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+|[`v1.23.11-kubeadm-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|` 0MB / 0MB`|
+|[`v1.23.11-kubeadm-cni-alpine3.15`]()| `0MB / 0MB`|`0MB / 0MB`|`0MB / 0MB`|
+
 #### Alpine 3.13 based kube-proxy image
 
 [`cloudtogo4edge/kube-proxy`](https://hub.docker.com/r/cloudtogo4edge/kube-proxy)
 
 * [`v1.25.0-alpine3.15`]()
-* [`v1.24.4-alpine3.15`]()
-* [`v1.23.10-alpine3.15`]()
+* [`v1.24.5-alpine3.15`]()
+* [`v1.23.11-alpine3.15`]()
 
 ## Usage
 
