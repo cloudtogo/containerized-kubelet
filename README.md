@@ -42,6 +42,17 @@ It is available on [cloudtogo4edge/kube-proxy](https://hub.docker.com/r/cloudtog
 
 ### `Compressed / Extracted` Size Matrix
 
+#### v1.26.0
+
+[`cloudtogo4edge/kubelet v1.26.0`](https://hub.docker.com/r/cloudtogo4edge/kubelet/tags?page=1&ordering=last_updated&name=v1.26.0)
+
+| Tag | amd64 | arm64 | arm32v7 |
+| --- | --- | --- | --- |
+|[`v1.26.0-alpine3.15`]()| `26.37MB / 79.15MB`|`24.72MB / 76.52MB`|`24.27MB / 69.70MB`|
+|[`v1.26.0-flannel-alpine3.15`]()| `31.00MB / 83.87MB`|`28.98MB / 80.89MB`|`28.64MB / 74.18MB`|
+|[`v1.26.0-cni-alpine3.15`]()| `44.43MB / 97.58MB`|`41.32MB / 93.56MB`|`41.20MB / 87.07MB`|
+|[`v1.26.0-kubeadm-alpine3.15`]()| `48.50MB / 102.04MB`|`43.65MB / 96.24MB`|`42.27MB / 88.44MB`|
+|[`v1.26.0-kubeadm-cni-alpine3.15`]()| `66.56MB / 120.47MB`|`60.25MB / 113.28MB`|`59.19MB / 105.80MB`|
 #### v1.25.5
 
 [`cloudtogo4edge/kubelet v1.25.5`](https://hub.docker.com/r/cloudtogo4edge/kubelet/tags?page=1&ordering=last_updated&name=v1.25.5)
@@ -64,24 +75,13 @@ It is available on [cloudtogo4edge/kube-proxy](https://hub.docker.com/r/cloudtog
 |[`v1.24.9-cni-alpine3.15`]()| `42.96MB / 94.29MB`|`39.97MB / 90.40MB`|`39.84MB / 84.20MB`|
 |[`v1.24.9-kubeadm-alpine3.15`]()| `43.33MB / 94.88MB`|`39.15MB / 89.77MB`|`38.00MB / 82.51MB`|
 |[`v1.24.9-kubeadm-cni-alpine3.15`]()| `61.39MB / 113.32MB`|`55.75MB / 106.81MB`|`54.93MB / 99.88MB`|
-#### v1.23.15
-
-[`cloudtogo4edge/kubelet v1.23.15`](https://hub.docker.com/r/cloudtogo4edge/kubelet/tags?page=1&ordering=last_updated&name=v1.23.15)
-
-| Tag | amd64 | arm64 | arm32v7 |
-| --- | --- | --- | --- |
-|[`v1.23.15-alpine3.15`]()| `25.61MB / 78.20MB`|`24.03MB / 75.55MB`|`23.58MB / 68.99MB`|
-|[`v1.23.15-flannel-alpine3.15`]()| `30.24MB / 82.93MB`|`28.29MB / 79.93MB`|`27.95MB / 73.47MB`|
-|[`v1.23.15-cni-alpine3.15`]()| `43.67MB / 96.63MB`|`40.63MB / 92.59MB`|`40.51MB / 86.36MB`|
-|[`v1.23.15-kubeadm-alpine3.15`]()| `45.14MB / 98.39MB`|`40.71MB / 92.93MB`|`39.45MB / 85.50MB`|
-|[`v1.23.15-kubeadm-cni-alpine3.15`]()| `63.20MB / 116.82MB`|`57.31MB / 109.97MB`|`56.37MB / 102.87MB`|
 #### Alpine 3.13 based kube-proxy image
 
 [`cloudtogo4edge/kube-proxy`](https://hub.docker.com/r/cloudtogo4edge/kube-proxy)
 
+* [`v1.26.0-alpine3.15`]()
 * [`v1.25.5-alpine3.15`]()
 * [`v1.24.9-alpine3.15`]()
-* [`v1.23.15-alpine3.15`]()
 
 ## Usage
 
